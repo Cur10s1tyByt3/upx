@@ -46,6 +46,13 @@ $c += -I$(UPX_LZMADIR)
 $c += -I$(top_srcdir)/src
 $c += -Wno-error
 
+lzma_d_cs.S : lzma_d-ppc64-hand.S
+	$(call tc,gcc) $(PP_FLAGS) -c -DLZMA_FALL_THROUGH=1 $< -o tmp/$T.o
+	$(call tc,f-objstrip,tmp/$T.o)
+	$(call tc,objcopy) -O binary tmp/$T.o tmp/$T.bin
+	$(call tc,objdump) -b binary -m powerpc -D tmp/$T.bin | $(RTRIM) > tmp/$T.bin.disasm
+	$(call tc,bin2h) --mode=gas tmp/$T.bin $@
+
 lzma_d_c%.S : lzma_d_c.c
 	$(call tc,gcc) $(PP_FLAGS) -S $< -o tmp/$T.s
 	sed  < tmp/$T.s  > tmp/$T.S \

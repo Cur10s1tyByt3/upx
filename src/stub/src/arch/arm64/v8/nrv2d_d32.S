@@ -32,8 +32,6 @@
 
 #define SAFE 0  /* 1 for src+dst bounds checking: cost 76 bytes */
 
-lr   .req  x30
-
 src  .req x0
 len  .req w1  /* overlaps 'cnt' */
 dst  .req x2
@@ -186,7 +184,6 @@ not_n2d:
         # fall into daisy chain
 
         .size ucl_nrv2d_decompress_32, .-ucl_nrv2d_decompress_32
-    .unreq lr
     .unreq src
     .unreq len
     .unreq dst

@@ -30,7 +30,6 @@
 */
 
 #include "macros.S"
-lr .req x30
 fp .req x29
 
 #define section .section
@@ -51,8 +50,8 @@ t1x  .req x8
         PUSH4(x2,x3, fp,lr)  // MATCH_94  dst,ldst, fp,lr
         mov fp,sp  // we use alloca (inlined and zeroed)
 
-#define LZMA_BASE_SIZE 1846
-#define LZMA_LIT_SIZE   768
+LZMA_BASE_SIZE= 1846
+LZMA_LIT_SIZE=   768
 
         ldrb t1,[src,#0]  // first byte, replaces LzmaDecodeProperties()
         mov t0,#2*LZMA_LIT_SIZE
@@ -101,7 +100,7 @@ State= 0
         strb t1,[a0,#1]
         and  t0,t0,#0xf  // lib_context_bits
         strb t0,[a0,#0]
-        bl ClangLzmaDecode  // the call
+        bl LzmaDecode  // the call
         mov sp,fp  // undo inlined alloca
 
 #if defined(WINDOWS_BACK) || !defined(DAISY_CHAIN)  //{
@@ -141,17 +140,12 @@ eof_lzma:
     .unreq a5
     .unreq a6
 
-ClangLzmaDecode:  // entry to C-lang LzmaDecode in next section
   section LZMA_DEC20
 #include "lzma_d_cf.S"
 
   section LZMA_DEC10
-#if 0  /*{*/
-#include "lzma_d_cs.S"
-#else  /*}{*/
 #define PARAMETER_STYLE 3
-#include "lzma_d-arm.S"
-#endif  /*}*/
+#include "lzma_d-arm64-hand.S"
 
   section LZMA_DEC30
 not_lzma:  // fall into daisy chain

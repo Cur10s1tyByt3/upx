@@ -31,6 +31,7 @@
 
 NBPW= 8
 #include "arch/arm64/v8/macros.S"
+#define lr x30
 
 sz_Elf64_Ehdr = 16 + 2*2 + 4 + 3*NBPW + 4 + 6*2
 sz_Elf64_Phdr = 2*4 + 6*NBPW

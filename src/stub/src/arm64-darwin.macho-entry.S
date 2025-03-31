@@ -111,19 +111,8 @@ f_decompress:
 
 #define NO_METHOD_CHECK 1
 
-  section NRV2E
-#include "arch/arm64/v8/nrv2e_d32.S"
-
-  section NRV2D
-#include "arch/arm64/v8/nrv2d_d32.S"
-
-  section NRV2B
-#include "arch/arm64/v8/nrv2b_d32.S"
-
   section NRV_TAIL
         // empty
-
-#include "arch/arm64/v8/lzma_d.S"
 
   section MACHMAINY
 end_decompress: .globl end_decompress

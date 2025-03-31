@@ -982,7 +982,9 @@ PackLinuxElf::addStubEntrySections(Filter const *, unsigned m_decompr)
         ( M_IS_NRV2E(ph_forced_method(ph.method)) ? "NRV_HEAD,NRV2E,NRV_TAIL"
         : M_IS_NRV2D(ph_forced_method(ph.method)) ? "NRV_HEAD,NRV2D,NRV_TAIL"
         : M_IS_NRV2B(ph_forced_method(ph.method)) ? "NRV_HEAD,NRV2B,NRV_TAIL"
-        : M_IS_LZMA(ph_forced_method(ph.method))  ? "LZMA_ELF00,LZMA_DEC20,LZMA_DEC30"
+        : M_IS_LZMA(ph_forced_method(ph.method))  ? (opt->small
+            ? "LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
+            : "LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" )
         : nullptr), nullptr);
     if (hasLoaderSection("CFLUSH"))
         addLoader("CFLUSH");
@@ -1548,8 +1550,9 @@ PackLinuxElf32::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s",
-                "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30");
+            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
+                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
+                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
         // End of daisy-chain fall-through.
@@ -1598,8 +1601,9 @@ PackLinuxElf32::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s",
-                "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30");
+            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
+                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
+                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
 
@@ -1745,8 +1749,9 @@ PackLinuxElf64::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s",
-                "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30");
+            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
+                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
+                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
         // End of daisy-chain fall-through.
@@ -1788,8 +1793,9 @@ PackLinuxElf64::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s",
-                "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30");
+            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
+                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
+                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
         if (hasLoaderSection("SYSCALLS")) {

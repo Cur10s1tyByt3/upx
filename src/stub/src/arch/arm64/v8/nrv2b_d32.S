@@ -39,7 +39,6 @@
 #define   jnextb1     GETBIT; bcs
 
 ucl_nrv2b_decompress_32: .globl ucl_nrv2b_decompress_32  // ARM mode
-lr   .req x30
 ip0  .req x16
 
 src  .req x0
@@ -125,7 +124,6 @@ copy_n2b:  // copy 1+len bytes
 not_n2b:
 #endif
         # fall into daisy chain
-    .unreq lr
     .unreq ip0
 
     .unreq src

@@ -42,10 +42,18 @@ $c += -DWITH_LZMA=$(UPX_LZMA_VERSION)
 $c += -I$(UPX_LZMADIR)
 $c += -I$(top_srcdir)/src
 
+lzma_d_cs.S : lzma_d-amd64-hand.S
+	$(call tc,gcc) $(PP_FLAGS) -c -DLZMA_FALL_THROUGH=1 $< -o tmp/$T.o
+	$(call tc,f-objstrip,tmp/$T.o)
+	$(call tc,objcopy) -O binary tmp/$T.o tmp/$T.bin
+	$(call tc,objdump) -b binary -m i386:x86-64 -D tmp/$T.bin | $(RTRIM) > tmp/$T.bin.disasm
+	$(call tc,bin2h) --mode=gas tmp/$T.bin $@
+
 lzma_d_c%.S : lzma_d_c.c
 	$(call tc,gcc) $(PP_FLAGS) -c $< -o tmp/$T.o
 	$(call tc,f-objstrip,tmp/$T.o)
-	$(call tc,objcopy) -O binary --only-section .text.LzmaDecode tmp/$T.o tmp/$T.bin
+	$(call tc,objcopy) -R .text.LzmaDecodeProperties tmp/$T.o tmp/$T.o2
+	$(call tc,objcopy) -O binary tmp/$T.o2 tmp/$T.bin
 	head -c-1 tmp/$T.bin > tmp/$T.out
 	$(call tc,objdump) -b binary -m i386:x86-64 -D tmp/$T.out | $(RTRIM) > tmp/$T.out.disasm
 	$(call tc,bin2h) --mode=gas tmp/$T.out $@

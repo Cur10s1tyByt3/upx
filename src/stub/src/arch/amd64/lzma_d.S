@@ -100,6 +100,13 @@ section LZMA_ELF00
         push $0x5A  // return address slot (dummy CALL) [value easy to debug]
 #endif // WINDOWS_BACK
 
+#undef src
+#undef lsrc
+#undef dst
+#undef ldst
+#undef LZMA_BASE_SIZE
+#undef LZMA_LIT_SIZE
+
 #ifndef NO_RED_ZONE
 
 section LZMA_DEC10

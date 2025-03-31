@@ -31,7 +31,7 @@
 
 NBPW= 8
 #include "arch/arm64/v8/macros.S"
-lr .req x30
+
 
 #define DEBUG 0
 

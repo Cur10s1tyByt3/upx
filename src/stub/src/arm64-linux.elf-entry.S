@@ -243,7 +243,7 @@ wmeth  .req w4
         mov arg6,#0  // beginning of file
         mov arg5w,mfd
         mov arg4w,#MAP_SHARED  // modes
-        mov arg3w,#PROT_READ|PROT_EXEC  // FIXME: add PROT_WRITE for DEBUG only
+        mov arg3w,#PROT_READ|PROT_WRITE|PROT_EXEC  // FIXME: add PROT_WRITE for DEBUG only
         ldr arg2w,[xFOLD,#sz_unc + LBINFO - LxFOLD]
         str arg2,[sp,#F_LENU]
         mov arg1,#0  // addr (kernel chooses)

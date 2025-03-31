@@ -278,9 +278,9 @@ p_mprot= -4*8
         push %rcx  // fragment
 o_frag = -5*8
 
-        call L210
+        call LA210
 #include "arch/amd64/bxx.S"
-L210:
+LA210:
 o_unflt= -6*8
         movzbl b_method-4+1(%rsi),%ecx; push %rcx  // ftid
         movzbl b_method-4+2(%rsi),%ecx; push %rcx  // cto8
