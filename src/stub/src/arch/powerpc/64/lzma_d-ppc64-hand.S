@@ -751,5 +751,6 @@ lzmaExit:
 	addi sp,sp,SZ_SAVAREA+32*NBPW
 	ld  r0,    2*NBPW(sp)  // return address
 	mtlr r0
+#if !defined(LZMA_FALL_THROUGH) || !LZMA_FALL_THROUGH  //{
 	ret
-
+#endif  //}

@@ -82,8 +82,8 @@ LZMA_ELF00      0x0000000000000000       0x98
 LZMA_DEC30      0x0000000000000000       0x30
  LZMA_DEC30     0x0000000000000000       0x30 tmp/powerpc64-linux.elf-fold.o
 
-LZMA_DEC10      0x0000000000000000      0x5c8
- LZMA_DEC10     0x0000000000000000      0x5c8 tmp/powerpc64-linux.elf-fold.o
+LZMA_DEC10      0x0000000000000000      0x5c4
+ LZMA_DEC10     0x0000000000000000      0x5c4 tmp/powerpc64-linux.elf-fold.o
 
 LZMA_DEC20      0x0000000000000000      0xc6c
  LZMA_DEC20     0x0000000000000000      0xc6c tmp/powerpc64-linux.elf-fold.o

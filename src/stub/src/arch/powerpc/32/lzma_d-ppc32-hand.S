@@ -199,7 +199,6 @@ LZMA_LIT_SIZE =  (3*256)
 	a4= outStream, a5= outSize, a6= &outSizeProcessed)
 */
 LzmaDecode: .globl LzmaDecode
-  teq r0,r0
 #if 3==PARAMETER_STYLE  /*{*/
 vs_ps= 2
 vs_lp= 1
@@ -618,7 +617,6 @@ L530:
 lzmaDataError:
 	li v0,1  # failure
 lzmaExit:
-  teq r0,r0
 	lwz t0,inStream(sp)
 	lwz t1,inSizeProcessed(sp)
 	subf t0,t0,inPtr
@@ -634,5 +632,7 @@ lzmaExit:
 	lwz r2,4+ 4*( 2-0)(sp)  // some ABI require r2 preserved
 	lmw a8,4+ 4*(a8-0)(sp)
 	lwz sp,0(sp)
+#if !defined(LZMA_FALL_THROUGH) || !LZMA_FALL_THROUGH  //{
 	ret
+#endif //}
 

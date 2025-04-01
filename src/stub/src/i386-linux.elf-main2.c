@@ -662,8 +662,8 @@ do_xmap(
         DPRINTF("  mlen=%%p\\n", mlen);
 #endif
 
-        DPRINTF("mmap addr=%%p  mlen=%%p  offset=%%p  frag=%%p  prot=%%x\\n",
-            addr, mlen, phdr->p_offset - frag, frag, prot);
+        DPRINTF("mmap addr=%%p  mlen=%%p  phdr=%%p  offset=%%p  frag=%%p  prot=%%x\\n",
+            addr, mlen, phdr, phdr->p_offset - frag, frag, prot);
         int mfd = 0;
         if (xi && phdr->p_flags & PF_X) { // SELinux
             // Cannot set PROT_EXEC except via mmap() into a region (Linux "vma")
