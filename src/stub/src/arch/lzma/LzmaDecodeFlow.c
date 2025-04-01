@@ -1,21 +1,21 @@
 /*
   jfrLzmaDecode.c
   LZMA Decoder (optimized for Speed version)
-  
+
   LZMA SDK 4.40 Copyright (c) 1999-2006 Igor Pavlov (2006-05-01)
   http://www.7-zip.org/
 
   LZMA SDK is licensed under two licenses:
   1) GNU Lesser General Public License (GNU LGPL)
   2) Common Public License (CPL)
-  It means that you can select one of these two licenses and 
+  It means that you can select one of these two licenses and
   follow rules of that license.
 
   SPECIAL EXCEPTION:
-  Igor Pavlov, as the author of this Code, expressly permits you to 
-  statically or dynamically link your Code (or bind by name) to the 
-  interfaces of this file without subjecting your linked Code to the 
-  terms of the CPL or GNU LGPL. Any modifications or additions 
+  Igor Pavlov, as the author of this Code, expressly permits you to
+  statically or dynamically link your Code (or bind by name) to the
+  interfaces of this file without subjecting your linked Code to the
+  terms of the CPL or GNU LGPL. Any modifications or additions
   to this file, however, are subject to the LGPL or CPL terms.
 */
 
@@ -24,7 +24,7 @@
 #endif  //}
 /*
   Modified 2007-06-19 by John F. Reiser to add labels ("L200")
-  for cross-reference to hand-compiled versions.  
+  for cross-reference to hand-compiled versions.
   Two labels ("L200 - L530") indicate begin and end;
   Three labels ("L203 - L270 - L520") indicate if-then-else.
 */
@@ -91,16 +91,16 @@
    files rely on that register being preserved when they call LzmaDecode.
 
    Compilation flags for hand tuning on x86:
-	gcc-4.1.1 -S -O2 -m32 -march=i386 -nostdinc \
-	-Wall -W -Wcast-align -Wcast-qual -Wwrite-strings -Werror -mtune=k6 \
-	-fno-exceptions -fno-asynchronous-unwind-tables -fno-omit-frame-pointer \
-	-fno-align-functions -fno-align-jumps -fno-align-labels -fno-align-loops \
-	-fweb -ffunction-sections \
-	-momit-leaf-frame-pointer -mpreferred-stack-boundary=2 \
-	-DN_REGISTER_VARS=1 \
-	-DLZMA_DATA_ERROR_ACTION="return LZMA_RESULT_DATA_ERROR" \
-	-DUSE_RESULT_DATA_ERROR_LABEL=0 \
-	jfrLzmaDecode.c
+    gcc-4.1.1 -S -O2 -m32 -march=i386 -nostdinc \
+    -Wall -W -Wcast-align -Wcast-qual -Wwrite-strings -Werror -mtune=k6 \
+    -fno-exceptions -fno-asynchronous-unwind-tables -fno-omit-frame-pointer \
+    -fno-align-functions -fno-align-jumps -fno-align-labels -fno-align-loops \
+    -fweb -ffunction-sections \
+    -momit-leaf-frame-pointer -mpreferred-stack-boundary=2 \
+    -DN_REGISTER_VARS=1 \
+    -DLZMA_DATA_ERROR_ACTION="return LZMA_RESULT_DATA_ERROR" \
+    -DUSE_RESULT_DATA_ERROR_LABEL=0 \
+    jfrLzmaDecode.c
 */
 
 #ifndef USE_RESULT_DATA_ERROR_LABEL  /*{*/
@@ -152,7 +152,7 @@
 #define RC_TEST { if (Buffer == BufferLim) LZMA_DATA_ERROR_ACTION;}
 
 #define RC_INIT(buffer, bufferSize) Buffer = buffer; BufferLim = buffer + bufferSize; RC_INIT2
- 
+
 #endif  /*}*/
 
 #define RC_NORMALIZE if (Range < kTopValue) { RC_TEST; Range <<= 8; Code = (Code << 8) | RC_READ_BYTE; }
@@ -173,7 +173,7 @@
 #define LenLow (LenChoice2 + 1)
 #define LenMid (LenLow + (kNumPosStatesMax << kLenNumLowBits))
 #define LenHigh (LenMid + (kNumPosStatesMax << kLenNumMidBits))
-#define kNumLenProbs (LenHigh + kLenNumHighSymbols) 
+#define kNumLenProbs (LenHigh + kLenNumHighSymbols)
 
 
 #define kNumStates 12
@@ -270,7 +270,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
   int const lc = vs->Properties.lc;
 
   #ifdef _LZMA_OUT_READ  /*{*/
-  
+
 #if 1 > N_REGISTER_VARS  /*{*/
   UInt32 Range = vs->Range;
 #endif  /*}*/
@@ -316,7 +316,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
       UInt32 numProbs = Literal + ((UInt32)LZMA_LIT_SIZE << (lc + vs->Properties.lp));
       UInt32 i;
       for (i = 0; i < numProbs; i++)
-        p[i] = kBitModelTotal >> 1; 
+        p[i] = kBitModelTotal >> 1;
       rep0 = rep1 = rep2 = rep3 = 1;
       state = 0;
       globalPos = 0;
@@ -370,7 +370,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
     for (i = 0; i < numProbs; i++)
       p[i] = kBitModelTotal >> 1;
   }
-  
+
   #ifdef _LZMA_IN_CB  /*{*/
   RC_INIT;
   #else  /*}{*/
@@ -427,7 +427,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
 
   while(nowPos < outSize) { /* the top-level outer loop; n1  L200 - L530 */
     int posState = (int)(
-        (nowPos 
+        (nowPos
         #ifdef _LZMA_OUT_READ  /*{*/
         + globalPos
         #endif  /*}*/
@@ -439,7 +439,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
       int symbol = 1;
       CProb *prob1 = p + Literal + (LZMA_LIT_SIZE *   /* used L210, L240 */
         (((
-        (nowPos 
+        (nowPos
         #ifdef _LZMA_OUT_READ  /*{*/
         + globalPos
         #endif  /*}*/
@@ -485,7 +485,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
       else if (state < 10) state -= 3;
       else state -= 6;
     }
-    else             
+    else
     { /* n2 */ /* L270 - L520 */
       CProb *prob2;
       if (0==rcGetBit(0, p + IsRep + state))
@@ -505,14 +505,14 @@ int LzmaDecode(CLzmaDecoderState *const vs,
             #ifdef _LZMA_OUT_READ  /*{*/
             UInt32 pos;
             #endif  /*}*/
-            
+
             #ifdef _LZMA_OUT_READ  /*{*/
             if (distanceLimit == 0)
             #else  /*}{*/
             if (nowPos == 0)
             #endif  /*}*/
               return LZMA_RESULT_DATA_ERROR;
-            
+
             state = state < kNumLitStates ? 9 : 11;  /* L297 */
             #ifdef _LZMA_OUT_READ  /*{*/
             pos = dictionaryPos - rep0;
@@ -541,7 +541,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
           { /* L305 - L310 - L330 */
             distance = rep1;
           }
-          else 
+          else
           { /* L310  - L330 */
             if (0==rcGetBit(0,  p + IsRepG2 + state))
             { /* L315 - L320 - L325 */
@@ -593,7 +593,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
         int posSlot;
         state += kNumLitStates;
         posSlot = RangeDecoderBitTreeDecode(kNumPosSlotBits, p + PosSlot +
-            ((len < kNumLenToPosStates ? len : kNumLenToPosStates - 1) << 
+            ((len < kNumLenToPosStates ? len : kNumLenToPosStates - 1) <<
             kNumPosSlotBits));
         if (posSlot >= kStartPosModelIndex)
         { /* n4 */ /* L405 - L460 - L465 */
@@ -652,7 +652,7 @@ int LzmaDecode(CLzmaDecoderState *const vs,
 
       len += kMatchMinLen;
       #ifdef _LZMA_OUT_READ  /*{*/
-      if (rep0 > distanceLimit) 
+      if (rep0 > distanceLimit)
       #else  /*}{*/
       if (rep0 > nowPos)
       #endif  /*}*/
