@@ -121,7 +121,7 @@ vs_lc= 0
     6= outStream, 7= outSize, 8= &outSizeProcessed)
 */
     .balign 16
-LzmaDecode: .globl LzmaDecode
+//LzmaDecode: .globl LzmaDecode
     push %edi; push %esi; push %ebx
     push %ebp; mov %esp,%ebp
 #define vs      4*5(%ebp)

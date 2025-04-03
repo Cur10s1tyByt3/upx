@@ -199,16 +199,6 @@ not_nrv2b:
 
 section LZMA_DAISY
     cmp $M_LZMA,meth; jne not_lzma
-
-section LZMA_ELF00  // prefix for parameter juggling
-        push dst; push src  // MATCH_60
-#define arg2d esi
-        mov sz_cpr - sz_binfo(src),%arg2d
-#undef src
-#undef dst
-        mov fx_dstlen,%arg4
-        pop %arg1; pop %arg3  // MATCH_60
-
 #include "arch/amd64/lzma_d.S"
 not_lzma:
 

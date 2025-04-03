@@ -475,7 +475,8 @@ tmp/amd64-linux.elf-so_fold.o : $(srcdir)/src/$$T.S
 	$(call tc,f-objstrip,$@)
 
 tmp/amd64-expand.o: $(srcdir)/src/$$T.S
-	$(call tc,gcc) -c $< -o $@
+	$(call tc,gcc) -c -DLZMA_FALL_THROUGH=1 $< -o $@
+	$(call tc,objdump) -Dr $@ >tmp/$$T.disasm
 
 tmp/amd64-linux.elf-help_umf.o: $(srcdir)/src/$$T.S
 	$(call tc,gcc) -c $< -o $@
@@ -664,7 +665,7 @@ arm.v4a-linux.elf-so_fold.h : $(srcdir)/src/$$T.lds \
 	$(call tc,bin2h) tmp/$T.bin $@
 
 tmp/arm.v4a-expand.o: $(srcdir)/src/$$T.S
-	$(call tc,gcc) -c $< -o $@
+	$(call tc,gcc) -c -DLZMA_FALL_THROUGH=1 $< -o $@
 
 tmp/arm.v4a-linux.elf-help_umf.o: $(srcdir)/src/$$T.S
 	$(call tc,gcc) -c $< -o $@
@@ -789,7 +790,7 @@ arm.v5a-linux.elf-so_fold.h : $(srcdir)/src/$$T.lds \
 	$(call tc,bin2h) tmp/$T.bin $@
 
 tmp/arm.v5a-expand.o: $(srcdir)/src/$$T.S
-	$(call tc,gcc) -c $< -o $@
+	$(call tc,gcc) -c -DLZMA_FALL_THROUGH=1 $< -o $@
 
 tmp/arm.v5a-linux.elf-help_umf.o: $(srcdir)/src/$$T.S
 	$(call tc,gcc) -c $< -o $@
@@ -899,7 +900,7 @@ tmp/arm64-linux.elf-so_fold.o : $(srcdir)/src/$$T.S
 	$(call tc,f-objstrip,$@)
 
 tmp/arm64-expand.o: $(srcdir)/src/$$T.S
-	$(call tc,gcc) -c $< -o $@
+	$(call tc,gcc) -c -DLZMA_FALL_THROUGH=1 $< -o $@
 	arm64-linux-objdump-2.25 -Dr $(tc_objdump_disasm_options) tmp/$T.o | $(RTRIM) > tmp/$T.o.disasm
 
 tmp/arm64-linux.elf-help_umf.o: $(srcdir)/src/$$T.S
@@ -1028,7 +1029,7 @@ tmp/armeb.v4a-linux.elf-upxfd_linux.o : $(srcdir)/src/upxfd_linux.c
 	$(call tc,objdump) -Dr $(tc_objdump_disasm_options) $@ | $(RTRIM) > $@.disasm
 
 tmp/armeb.v4a-expand.o: $(srcdir)/src/$$T.S
-	$(call tc,gcc) -c $< -o $@
+	$(call tc,gcc) -c -DLZMA_FALL_THROUGH=1 $< -o $@
 
 tmp/armeb.v4a-linux.elf-help_umf.o: $(srcdir)/src/$$T.S
 	$(call tc,gcc) -c $< -o $@
@@ -1451,7 +1452,7 @@ tmp/i386-linux.elf-so_fold.o : $(srcdir)/src/$$T.S
 	$(call tc,f-objstrip,$@)
 
 tmp/i386-expand.o: $(srcdir)/src/$$T.S
-	$(call tc,gcc) -c $< -o $@
+	$(call tc,gcc) -c -DLZMA_FALL_THROUGH=1 $< -o $@
 
 tmp/i386-linux.elf-help_umf.o: $(srcdir)/src/$$T.S
 	$(call tc,gcc) -c $< -o $@
@@ -1950,7 +1951,7 @@ tmp/powerpc-linux.elf-upxfd_linux.o : $(srcdir)/src/upxfd_linux.c
 	$(call tc,objdump) -Dr $(tc_objdump_disasm_options) $@ | $(RTRIM) > $@.disasm
 
 tmp/powerpc-expand.o: $(srcdir)/src/$$T.S
-	$(call tc,gcc) -c $< -o $@
+	$(call tc,gcc) -c -DLZMA_FALL_THROUGH=1 $< -o $@
 
 # /***********************************************************************
 # // powerpc-linux.kernel.vmlinux

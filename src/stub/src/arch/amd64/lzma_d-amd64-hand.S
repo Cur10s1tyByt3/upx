@@ -124,7 +124,7 @@ LZMA_LIT_SIZE =  768
     %r8= outStream, %r9= outSize, 8(%rsp)= &outSizeProcessed)
 */
     .balign 16
-LzmaDecode: .globl LzmaDecode
+//LzmaDecode: .globl LzmaDecode
     push %r15; push %r14; push %r13; push %r12  # caller registers
     push %rbx
     push %rbp; mov %rsp,%rbp

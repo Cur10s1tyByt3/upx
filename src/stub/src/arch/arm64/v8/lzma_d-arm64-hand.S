@@ -169,7 +169,7 @@ Probs   .req x28
 /* LzmaDecode(x0=vs, x1=inStream,  w2=inSize,  x3= &inSizeProcessed,
                  x4=outStream, w5=outSize, x6=&outSizeProcessed)
 */
-LzmaDecode: .globl LzmaDecode
+//LzmaDecode: .globl LzmaDecode
 #if 3==PARAMETER_STYLE  /*{*/
 vs_ps= 2
 vs_lp= 1
@@ -389,7 +389,6 @@ rcGetBit1:
 #endif  /*}*/
     ret
 
-    .balign 32
 L200:  # main loop
     sub r_nowPosx,outPtr,outBuf
     lsl mi,state,#kNumPosBitsMax
@@ -423,7 +422,6 @@ L210:  // symbol === mi === mo
     cbnz t0,L244;   blt L210
     b L245
 
-    .balign 32
 L240:  # symbol === mi === mo
     mov p_in,prob
     call rcGetBit_mi
@@ -625,6 +623,6 @@ lzmaExit:
     ldp x25,x26,[sp,#  8*NBPW]
     ldp x27,x28,[sp,# 10*NBPW]
     ldp  fp, lr,[sp],#16*NBPW
+#if !defined(LZMA_FALL_THROUGH) || !LZMA_FALL_THROUGH  //{
     ret
-
-    .unreq fp
+#endif  //}

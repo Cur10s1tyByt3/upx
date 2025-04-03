@@ -127,8 +127,7 @@ vs_lc= 0
 */
     .arm
     .type   LzmaDecode, %function
-LzmaDecode: .globl LzmaDecode
-  bkpt
+//LzmaDecode: .globl LzmaDecode
         // save &inSizeProcesesed and caller registers
     stmdb sp!,{r3, r4,r5,r6,r7, r8,r9,r10,r11, lr}
     add r12,r2,r1  // inLim
@@ -548,7 +547,6 @@ L530:
 lzmaDataError:
     mov r0,#1  // failure
 lzmaExit:
-  bkpt
     ldr t0,inPtr
     ldr t1,inBuf
     sub t0,t0,t1

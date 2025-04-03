@@ -98,7 +98,7 @@ SYS_open     =   5 + SYSBASE
 //0:    .word -0b + l_info
 section MACHMAINX
 _start: .globl _start
-    int3
+    int3  // DEBUG Mac
         call main  // push &f_exp
 
   section MACH_UNC
@@ -228,7 +228,7 @@ eof_n2e:
         mov $0x5678,%ecx; jmp eof
 
 eof:
-   int3
+   int3  // DEBUG Mac
         pop %rcx  // &input_eof
         movq %rsi,%rax; subq %rcx,%rax  // src -= eof;  // return 0: good; else: bad
         pop %rdx;       subq %rdx,%rdi  // dst -= original dst

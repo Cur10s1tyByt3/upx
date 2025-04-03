@@ -111,8 +111,6 @@ arg6w .req w5
 #define TRACE(arg) /*empty*/
 #endif  //}
 
-//lr    .req x30
-//fp    .req x29
 wLENU  .req w29  // un-folded fold_begin and upx_main
   xLENU  .req x29
 xADRU  .req x28

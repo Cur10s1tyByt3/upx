@@ -198,7 +198,7 @@ LZMA_LIT_SIZE =  (3*256)
 /* LzmaDecode(a0=vs, a1=inStream, a2=inSize, a3= &inSizeProcessed,
     a4= outStream, a5= outSize, a6= &outSizeProcessed)
 */
-LzmaDecode: .globl LzmaDecode
+//LzmaDecode: .globl LzmaDecode
 #if 3==PARAMETER_STYLE  /*{*/
 vs_ps= 2
 vs_lp= 1

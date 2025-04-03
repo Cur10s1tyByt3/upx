@@ -30,7 +30,6 @@
 */
 
 #include "macros.S"
-fp .req x29
 
 #define section .section
 NBPW= 8
@@ -48,25 +47,19 @@ t1   .req w8
 t1x  .req x8
 
         PUSH4(x2,x3, fp,lr)  // MATCH_94  dst,ldst, fp,lr
-        mov fp,sp  // we use alloca (inlined and zeroed)
+        mov fp,sp  // for de-alloca
 
 LZMA_BASE_SIZE= 1846
 LZMA_LIT_SIZE=   768
+W_PROB= 2  // sizeof(unsigned short); width of a probability
 
         ldrb t1,[src,#0]  // first byte, replaces LzmaDecodeProperties()
-        mov t0,#2*LZMA_LIT_SIZE
+        mov t0,#W_PROB*LZMA_LIT_SIZE
         lsr t1,t1,#3  // lit_context_bits + lit_pos_bits
-        lslv t0,t0,t1  // 2*LZMA_LIT_SIZE << (lit_context_bits + lit_pos_bits)
+        lslv t0,t0,t1  // W_PROB*LZMA_LIT_SIZE << (lit_context_bits + lit_pos_bits)
 #define W 4  /* even #bits to round up so that 8 bits span all the 1's */
-        add t0,t0,#((~(~0<<W) + 2*LZMA_BASE_SIZE)>>W)<<W  // 0 mod 16
-
-        mov t1x,sp
-        sub sp,sp,t0,uxtw
-        mov x4,sp
-1:  // clear lzma probability array
-        stp xzr,xzr,[x4],#2*NBPW
-        cmp x4,t1x
-        blo 1b
+        add t0,t0,#((~(~0<<W) + W_PROB*LZMA_BASE_SIZE)>>W)<<W  // 0 mod 16
+        sub sp,sp,t0,uxtw  // alloca(Probs)
 
 a0 .req x0  /* &CLzmaDecoderState */
 a1 .req x1  /* inp */
@@ -81,7 +74,7 @@ a6 .req x6  /* &outSizeProcessed */
 //      a1= inp,  a2= inSize,  a3= &inSizeProcessed,
 //      a4= outp, a5= outSize, a6= &outSizeProcessed
 //)
-        stp xzr,xzr,[sp,#-2*NBPW]!  // clear CLzmaDecoderState, inSizeProcessed
+        stp xzr,xzr,[sp,#-2*NBPW]!  // MATCH_99  clear CLzmaDecoderState, inSizeProcessed
 
         mov a6,ldst  // &outSizeProcessed
         ldr a5,[a6]  // outSize
@@ -90,33 +83,17 @@ a6 .req x6  /* &outSizeProcessed */
         sub w2,lsrc,#2  // inSize
         mov a1,src  // inp
 State= 0
-        add a0,sp,#State
+        add a0,sp,#State  // where CLzmaDecoderState resides
 
         ldrb t0,[a1],#1  // first byte, replaces LzmaDecodeProperties()
         and  t0,t0,#7  // posBits
-        strb t0,[a0,#2]
+        strb t0,[a0,#2]  // pb
         ldrb t0,[a1],#1  // second byte, replaces LzmaDecodeProperties()
         lsr  t1,t0,#4  // lit_pos_bits
-        strb t1,[a0,#1]
-        and  t0,t0,#0xf  // lib_context_bits
-        strb t0,[a0,#0]
-        bl LzmaDecode  // the call
-        mov sp,fp  // undo inlined alloca
-
-#if defined(WINDOWS_BACK) || !defined(DAISY_CHAIN)  //{
-eof_lzma:
-        mov x5,x0  // save result value
-        POP4(x0,x1, fp,lr)  // MATCH_94  x0= orig_dst; x1= plen_dst
-        ldr x1,[x1]  // outSizeProcessed
-
-        add x1,x1,x0  // last
-        sync_cache  // x0= lo; x1= hi; uses x2-x4
-
-        mov x0,x5  // result value
-        ret
-#else  //}{
-        b eof_lzma
-#endif  //}
+        strb t1,[a0,#1]  // lp
+        and  t0,t0,#0xf  // lit_context_bits
+        strb t0,[a0,#0]  // lc
+                // fall into LzmaDecode at start of LZMA_DEC10 or LZMA_DEC20
 
 #undef t0
 #undef t1
@@ -148,6 +125,21 @@ eof_lzma:
 #include "lzma_d-arm64-hand.S"
 
   section LZMA_DEC30
+#if defined(WINDOWS_BACK) || !defined(DAISY_CHAIN)  //{
+eof_lzma:
+        mov x5,x0  // save result value
+        POP4(x0,x1, fp,lr)  // MATCH_94  x0= orig_dst; x1= plen_dst
+        ldr x1,[x1]  // outSizeProcessed
+
+        add x1,x1,x0  // last
+        sync_cache  // x0= lo; x1= hi; uses x2-x4
+
+        mov x0,x5  // result value
+        ret
+#else  //}{
+        mov sp,fp  // de-alloca (includes 'pop' for MATCH_99 ?)
+        b eof_lzma
+#endif  //}
 not_lzma:  // fall into daisy chain
 
 // vi:ts=8:et

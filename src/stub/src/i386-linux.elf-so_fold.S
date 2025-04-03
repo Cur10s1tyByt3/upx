@@ -238,7 +238,7 @@ close: .globl close
 munmap: .globl munmap
         movb $ __NR_munmap,%al; 5: jmp 5f
 Pwrite: .globl Pwrite
-        int3
+        int3  // DEBUG Pwrite
 write: .globl write
         movb $__NR_write,%al; 5:
 sys_check_al:

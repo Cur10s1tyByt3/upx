@@ -31,10 +31,29 @@ NBPW= 8
 #define section .section
 
 section LZMA_ELF00
-//decompress:  // (uchar const *src, size_t lsrc, uchar *dst, u32 &ldst, uint method)
+// amd64-expand.S:decompress has converted from fx_ registers (f_expand)
+// to nrv_ decompress registers; we must convert to lzma_ registers
+#define nrv_src %rsi
+#define nrv_dst %rdi
+#define arg2d esi
+#define fx_dstlen %rdx
+        push nrv_dst; push nrv_src  // MATCH_60
+sz_cpr= 4
+sz_binfo= 12
+        mov sz_cpr - sz_binfo(nrv_src),%arg2d
+        mov fx_dstlen,%arg4
+#undef nrv_src
+#undef nrv_dst
+#undef arg2d
+#undef fx_dstlen
+        pop %arg1; pop %arg3  // MATCH_60
+
+//    (uchar const *src, size_t lsrc, uchar *dst, u32 &ldst, uint method)
 /* Arguments according to calling convention */
+#undef src
 #define src  %arg1  /* %rdi */
 #define lsrc %arg2  /* %rsi */
+#undef dst
 #define dst  %arg3  /* %rdx */
 #define ldst %arg4  /* %rcx */ /* Out: actually a reference: &len_dst */
 #ifndef meth  //{
@@ -55,6 +74,7 @@ section LZMA_ELF00
 #endif
         pushq %rbp; movq %rsp,%rbp  // we use alloca; 'leave' is in LZMA_DEC30
 
+//Convert parameter list into:
 //LzmaDecode(  // from lzmaSDK/C/7zip/Compress/LZMA_C/LzmaDecode.h
 //      %arg1= &CLzmaDecoderState,
 //      %arg2= in,  %arg3l= inSize, %arg4= &inSizeProcessed,
@@ -107,20 +127,16 @@ section LZMA_ELF00
 #undef LZMA_BASE_SIZE
 #undef LZMA_LIT_SIZE
 
-#ifndef NO_RED_ZONE
-
 section LZMA_DEC10
 #include "lzma_d_cs.S"
 
+#ifndef NO_RED_ZONE  //{
 section LZMA_DEC20
 #include "lzma_d_cf.S"
-
-#else
-
+#else  //}{
 section LZMA_DEC20
 #include "lzma_d_cn.S"
-
-#endif
+#endif  //}
 
 section LZMA_DEC30
         movq -1*NBPW(%rbp),%rsi  // MATCH_70  src [after header]

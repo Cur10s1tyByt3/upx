@@ -199,7 +199,7 @@ SZ_SAVAREA= 6*NBPW  // (sp,cr,lr, xx,yy,zz) OUTGOING save area per calling conve
 /* LzmaDecode(a0=vs, a1=inStream, a2=inSize, a3= &inSizeProcessed,
     a4= outStream, a5= outSize, a6= &outSizeProcessed)
 */
-LzmaDecode: .globl LzmaDecode
+//LzmaDecode: .globl LzmaDecode
   teq r0,r0
 #if 3==PARAMETER_STYLE  /*{*/
 vs_ps= 2
