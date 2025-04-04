@@ -58,7 +58,7 @@ lzma_d_c%.S : lzma_d_c.c
 	sed -f fall-through.sed  < tmp/$T.s1 > tmp/$T.s
 	$(call tc,gcc) -x assembler-with-cpp -c tmp/$T.s -o tmp/$T.o
 	$(call tc,f-objstrip,tmp/$T.o)
-	$(call tc,objcopy) -O binary -R .text.LzmaDecodeProperties tmp/$T.o tmp/$%.bin
+	$(call tc,objcopy) -O binary -R .text.LzmaDecodeProperties tmp/$T.o tmp/$T.bin
 	$(call tc,objdump) -b binary -m aarch64 -D tmp/$T.bin | $(RTRIM) > tmp/$T.bin.disasm
 	$(call tc,bin2h) --mode=gas tmp/$T.bin $@
 
