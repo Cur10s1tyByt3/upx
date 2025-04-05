@@ -1109,11 +1109,13 @@ arm64-darwin.macho-entry.h : $(srcdir)/src/$$T.S
 	$(call tc,f-embed_objinfo,tmp/$T.bin)
 	$(call tc,bin2h) tmp/$T.bin $@
 
-arm64-darwin.macho-fold.h : tmp/$$T.o tmp/arm64-darwin.macho-main.o
-	$(call tc,ld) --no-warn-mismatch --strip-all -Map tmp/$T.map $(filter %.o,$^) -o tmp/$T.tmp
-	$(call tc,objcopy) -O binary tmp/$T.tmp tmp/$T.bin
-	rm tmp/$T.tmp
-	chmod a-x tmp/$T.bin
+arm64-darwin.macho-fold.h : \
+	    tmp/$$T.o \
+            tmp/arm64-expand.o \
+	    tmp/arm64-darwin.macho-main.o
+	$(call tc,ld) -r -Map tmp/$T.map $(filter %.o,$^) -o tmp/$T.bin
+	$(call tc,objdump) -Dr $(tc_objdump_disasm_options) tmp/$T.bin | $(RTRIM) > tmp/$T.bin.disasm
+	$(call tc,f-embed_objinfo_without_xstrip_keep_dot_text,tmp/$T.bin)
 	$(call tc,bin2h) tmp/$T.bin $@
 
 tmp/arm64-darwin.macho-fold.o : $(srcdir)/src/$$T.S
