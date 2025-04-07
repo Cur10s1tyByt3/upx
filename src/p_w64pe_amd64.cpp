@@ -91,20 +91,24 @@ void PackW64PeAmd64::buildLoader(const Filter *ft) {
         addLoader("PEISEFI0");
     addLoader(isdll ? "PEISDLL1" : "", "PEMAIN01", // outer "enter" (push rbp; mov rsp,rbp)
               icondir_count > 1 ? (icondir_count == 2 ? "PEICONS1" : "PEICONS2") : "",
-              tmp_tlsindex ? "PETLSHAK" : "", "PEMAIN02",
-              // ph.first_offset_found == 1 ? "PEMAIN03" : "",
+              tmp_tlsindex ? "PETLSHAK" : "", "PEMAIN02");
 
-              // LZMA_ELF00 has inner "enter" (push rbp; mov rsp,rbp)
-              // LZMA_TAIL  has inner 'leave' (mov rbp,rsp; pop rbp)
-              M_IS_LZMA(ph.method) ? "LZMA_HEAD,LZMA_ELF00,LZMA_DEC20,LZMA_TAIL"
+    // ph.first_offset_found == 1 ? "PEMAIN03" : "");
 
-              : M_IS_NRV2B(ph.method) ? "NRV_HEAD,NRV2B"
-              : M_IS_NRV2D(ph.method) ? "NRV_HEAD,NRV2D"
-              : M_IS_NRV2E(ph.method) ? "NRV_HEAD,NRV2E"
-                                      : "UNKNOWN_COMPRESSION_METHOD",
-              // getDecompressorSections(),
-              /*multipass ? "PEMULTIP" :  */ "", "PEMAIN10");
-    addLoader(tmp_tlsindex ? "PETLSHAK2" : "");
+    // LZMA_ELF00 has inner "enter" (push rbp; mov rsp,rbp)
+    // LZMA_TAIL  has inner 'leave' (mov rbp,rsp; pop rbp)
+    if (M_IS_LZMA(ph.method)) {
+        addLoader("LZMA_HEAD,LZMA_ELF00", (opt->small ? "LZMA_DEC10" : "LZMA_DEC20"), "LZMA_TAIL");
+    } else {
+        addLoader(M_IS_NRV2B(ph.method)   ? "NRV_HEAD,NRV2B"
+                  : M_IS_NRV2D(ph.method) ? "NRV_HEAD,NRV2D"
+                  : M_IS_NRV2E(ph.method) ? "NRV_HEAD,NRV2E"
+                                          : "UNKNOWN_COMPRESSION_METHOD",
+                  // getDecompressorSections(),
+                  /*multipass ? "PEMULTIP" :  */ "", "PEMAIN10");
+    }
+    if (tmp_tlsindex)
+        addLoader("PETLSHAK2");
     if (ft->id) {
         const unsigned texv = ih.codebase - rvamin;
         assert(ft->calls > 0);
