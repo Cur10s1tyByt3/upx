@@ -124,30 +124,30 @@ vs_lc= 0
 //LzmaDecode: .globl LzmaDecode
     push %edi; push %esi; push %ebx
     push %ebp; mov %esp,%ebp
-#define vs      4*5(%ebp)
-#define inStream    4*6(%ebp)
-#define inSize      4*7(%ebp)
-#define inSizeProcessed 4*8(%ebp)
-#define outStream   4*9(%ebp)
-#define outSize     4*10(%ebp)
-#define outSizeProcessed 4*11(%ebp)
+#define vs      5*NBPW(%ebp)
+#define inStream    6*NBPW(%ebp)
+#define inSize      7*NBPW(%ebp)
+#define inSizeProcessed 8*NBPW(%ebp)
+#define outStream   9*NBPW(%ebp)
+#define outSize     10*NBPW(%ebp)
+#define outSizeProcessed 11*NBPW(%ebp)
 
 #define  inBuf   inStream
-#define  inLim   frame+4*7(%esp)
-#define  inLimF        4*7(%ebp)
+#define  inLim   frame+7*NBPW(%esp)
+#define  inLimF        7*NBPW(%ebp)
 #define outBuf  outStream
-#define outLim   frame+4*10(%esp)
-#define outLimF        4*10(%ebp)
-#define outBufS  frame+4* 9(%esp)
-#define outBufF        4* 9(%ebp)
+#define outLim   frame+10*NBPW(%esp)
+#define outLimF        10*NBPW(%ebp)
+#define outBufS  frame+9*NBPW(%esp)
+#define outBufF        9*NBPW(%ebp)
 
 frame= 16*NBPW
     mov outStream,%eax; addl %eax,outSize; push %eax  # ouPtr
-//#define outPtr    frame-4*1(%esp)
-#define outPtrF      -4*1(%ebp)
+//#define outPtr    frame-1*NBPW(%esp)
+#define outPtrF      -1*NBPW(%ebp)
     push $0  # prevB
-#define prevB   frame-4*2(%esp)
-#define prevBF       -4*2(%ebp)
+#define prevB   frame-2*NBPW(%esp)
+#define prevBF       -2*NBPW(%ebp)
 
     cld
 #if 1==PARAMETER_STYLE  /*{ [0]: pb*45 + lp*9 + lc */
@@ -155,19 +155,19 @@ frame= 16*NBPW
     lodsb; mov $0,%ah  # pb*45 + lp*9 + lc
     mov $45,%cl; div %cl; xchg %eax,%ecx  # %ch= rem; %cl= pb
     or $~0,%edx; shl %cl,%edx; not %edx; push %edx
-#define posStateMask    frame-4*3(%esp)
-#define posStateMaskF        -4*3(%ebp)
+#define posStateMask    frame-3*NBPW(%esp)
+#define posStateMaskF        -3*NBPW(%ebp)
     mov %ch,%al; mov $0,%ah  # lp*9 + lc
     mov $9,%cl; div %cl; xchg %eax,%ecx  # %ch= lc; %cl=lp
     or $~0,%edx; shl %cl,%edx; not %edx; push %edx
 #define litPosMask  frame-4*NBPW(%esp)
 #define litPosMaskF      -4*NBPW(%ebp)
     mov %ch,%al; push %eax  # lc in lo byte
-#define lc      frame-4*5(%esp)
-#define lcF          -4*5(%ebp)
+#define lc      frame-5*NBPW(%esp)
+#define lcF          -5*NBPW(%ebp)
     push %esi  # inPtr
-#define inPtr   frame-4*6(%esp)
-#define inPtrF       -4*6(%ebp)
+#define inPtr   frame-6*NBPW(%esp)
+#define inPtrF       -6*NBPW(%ebp)
     add %al,%cl  # lc + lp  ready for shift
     mov vs,%edi  # Probs
 #endif  /*}*/
@@ -176,74 +176,74 @@ frame= 16*NBPW
     mov  inStream,%esi; addl %esi, inSize
     lodsb; mov $7,%cl; and %al,%cl  # pb
     or $~0,%edx; shl %cl,%edx; not %edx; push %edx
-#define posStateMask    frame-4*3(%esp)
-#define posStateMaskF        -4*3(%ebp)
+#define posStateMask    frame-3*NBPW(%esp)
+#define posStateMaskF        -3*NBPW(%ebp)
     lodsb; mov %al,%cl; shr $4,%cl  # lp
     or $~0,%edx; shl %cl,%edx; not %edx; push %edx
 #define litPosMask  frame-4*NBPW(%esp)
 #define litPosMaskF      -4*NBPW(%ebp)
     and $0xf,%al; push %eax  # lc in lo byte
-#define lc      frame-4*5(%esp)
-#define lcF          -4*5(%ebp)
+#define lc      frame-5*NBPW(%esp)
+#define lcF          -5*NBPW(%ebp)
     push %esi  # inPtr
-#define inPtr   frame-4*6(%esp)
-#define inPtrF       -4*6(%ebp)
+#define inPtr   frame-6*NBPW(%esp)
+#define inPtrF       -6*NBPW(%ebp)
     add %al,%cl  # lc + lp  ready for shift
     mov vs,%edi  # Probs
 #endif  /*}*/
 
 #if 3==PARAMETER_STYLE  /*{  lc,lp,pb,xx  in separate bytes before probs[] */
     mov  inStream,%esi; addl %esi, inSize; push %esi  # inPtr
-#define inPtr       frame-4*3(%esp)
-#define inPtrF           -4*3(%ebp)
+#define inPtr       frame-3*NBPW(%esp)
+#define inPtrF           -3*NBPW(%ebp)
     mov vs,%esi; lodsl; xchg %eax,%edx  # %dl=lc; %dh=lp
     push %edx  # lc  in lo byte
 #define lc      frame-4*NBPW(%esp)
 #define lcF          -4*NBPW(%ebp)
     movb vs_ps-4(%esi),%cl   # %cl=ps;
                   or $~0,%eax; shl %cl,%eax; not %eax; push %eax
-#define posStateMask    frame-4*5(%esp)
-#define posStateMaskF        -4*5(%ebp)
+#define posStateMask    frame-5*NBPW(%esp)
+#define posStateMaskF        -5*NBPW(%ebp)
     movb %dh,%cl; or $~0,%eax; shl %cl,%eax; not %eax; push %eax  # %cl= lp
-#define litPosMask  frame-4*6(%esp)
-#define litPosMaskF      -4*6(%ebp)
+#define litPosMask  frame-6*NBPW(%esp)
+#define litPosMaskF      -6*NBPW(%ebp)
     addb %dl,%cl  # lc + lp;   [%cl was lp for litPosMask]
     mov %esi,%edi  # Probs
 #endif  /*}*/
 
     push $0
-#define posState frame-4*7(%esp)
-#define posStateF     -4*7(%ebp)
+#define posState frame-7*NBPW(%esp)
+#define posStateF     -7*NBPW(%ebp)
     push $0
-#define m_len   frame-4*8(%esp)
-#define m_lenF       -4*8(%ebp)
+#define m_len   frame-8*NBPW(%esp)
+#define m_lenF       -8*NBPW(%ebp)
     push $0
-#define Code    frame-4*9(%esp)
-#define CodeF        -4*9(%ebp)
+#define Code    frame-9*NBPW(%esp)
+#define CodeF        -9*NBPW(%ebp)
 
     LOADCON1(%eax)
     push %eax
-#define rep0    frame-4*10(%esp)
-#define rep0F        -4*10(%ebp)
+#define rep0    frame-10*NBPW(%esp)
+#define rep0F        -10*NBPW(%ebp)
 // Next 6 (rep1, rep2, rep3, prob, Probs, state) are known for 'pop'
     push %eax
-#define rep1    frame-4*11(%esp)
-#define rep1F        -4*11(%ebp)
+#define rep1    frame-11*NBPW(%esp)
+#define rep1F        -11*NBPW(%ebp)
     push %eax
-#define rep2    frame-4*12(%esp)
-#define rep2F        -4*12(%ebp)
+#define rep2    frame-12*NBPW(%esp)
+#define rep2F        -12*NBPW(%ebp)
     push %eax
-#define rep3    frame-4*13(%esp)
-#define rep3F        -4*13(%ebp)
+#define rep3    frame-13*NBPW(%esp)
+#define rep3F        -13*NBPW(%ebp)
     push $0
-#define prob    frame-4*14(%esp)
-#define probF        -4*14(%ebp)
+#define prob    frame-14*NBPW(%esp)
+#define probF        -14*NBPW(%ebp)
     push %edi  # Probs
-#define Probs   frame-4*15(%esp)
-#define ProbsF       -4*15(%ebp)
+#define Probs   frame-15*NBPW(%esp)
+#define ProbsF       -15*NBPW(%ebp)
     push $0  # state
-#define state   /* frame-4*16 */(%esp)
-#define stateF          -4*16   (%ebp)
+#define state   /* frame-16*NBPW */(%esp)
+#define stateF          -16*NBPW   (%ebp)
 
     or $~0,Range
 
