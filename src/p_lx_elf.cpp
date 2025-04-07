@@ -1550,9 +1550,9 @@ PackLinuxElf32::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
-                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
-                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
+            len += snprintf(&sec[len], sizeof(sec) - len,
+                ",LZMA_DAISY,LZMA_ELF00,%s,LZMA_DEC30",
+                (opt->small ? "LZMA_DEC10" : "LZMA_DEC20"));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
         // End of daisy-chain fall-through.
@@ -1601,9 +1601,9 @@ PackLinuxElf32::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
-                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
-                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
+            len += snprintf(&sec[len], sizeof(sec) - len,
+                ",LZMA_DAISY,LZMA_ELF00,%s,LZMA_DEC30",
+                (opt->small ? "LZMA_DEC10" : "LZMA_DEC20"));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
 
@@ -1749,9 +1749,9 @@ PackLinuxElf64::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
-                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
-                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
+            len += snprintf(&sec[len], sizeof(sec) - len,
+                ",LZMA_DAISY,LZMA_ELF00,%s,LZMA_DEC30",
+                (opt->small ? "LZMA_DEC10" : "LZMA_DEC20"));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
         // End of daisy-chain fall-through.
@@ -1793,9 +1793,9 @@ PackLinuxElf64::buildLinuxLoader(
             len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
         }
         if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
-                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
-                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
+            len += snprintf(&sec[len], sizeof(sec) - len,
+                ",LZMA_DAISY,LZMA_ELF00,%s,LZMA_DEC30",
+                (opt->small ? "LZMA_DEC10" : "LZMA_DEC20"));
         }
         len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
         if (hasLoaderSection("SYSCALLS")) {

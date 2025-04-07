@@ -122,10 +122,19 @@ unfilter:
 #define dst %rdi
 #define displ %ebp
 #define dispq %rbp
+#define M_LZMA          14
 
 decompress:  // (fx_src= &b_info, fx_dst= dst, fx_dstlen= &dstlen)
-    push fx_dstlen  // MATCH_51
     movzbl b_method(fx_src),meth  // daisy chain by decompression method
+    cmp $M_LZMA,meth; jne decomp05
+    mov %arg3,%arg4
+    mov %arg2,%arg3
+    mov sz_cpr(fx_src),%arg2l
+    add $sz_binfo,%arg1
+    jmp go_meth
+
+decomp05:  // setup for NRV2B, NRV2D, NRV2E
+    push fx_dstlen  // MATCH_51
     push fx_src; push fx_dst
     pop  dst;    pop  src
     mov sz_cpr(src),%eax; add $sz_binfo,src  // done with b_info; ready for movsb, lodsb
@@ -170,7 +179,6 @@ go_meth:
 #define M_NRV2D_LE32    5
 #define M_NRV2E_LE32    8
 #define M_CL1B_LE32     11
-#define M_LZMA          14
 
 // Daisy chain of decoding methods that were used
 #define NO_METHOD_CHECK 1  /* subsumed here by daisy chain */
@@ -208,7 +216,6 @@ not_lzma:
         or $~0,%eax  // "errno"
         int3; hlt  // no method
 
-eof_lzma:
 eof_n2b:
 eof_n2d:
 eof_n2e:
@@ -218,6 +225,7 @@ eof_n2e:
         pop %rcx  // MATCH_51 &dstlen
         movl %edi,(%rcx)  // actual length used at dst  XXX: 4GB
         sub %rsi,%rax  // src -= eof;  // return 0: good; else: bad
+eof_lzma:
         ret
 
         .balign 4

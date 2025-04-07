@@ -30,24 +30,7 @@
 NBPW= 8
 #define section .section
 
-section LZMA_ELF00
-// amd64-expand.S:decompress has converted from fx_ registers (f_expand)
-// to nrv_ decompress registers; we must convert to lzma_ registers
-#define nrv_src %rsi
-#define nrv_dst %rdi
-#define arg2d esi
-#define fx_dstlen %rdx
-        push nrv_dst; push nrv_src  // MATCH_60
-sz_cpr= 4
-sz_binfo= 12
-        mov sz_cpr - sz_binfo(nrv_src),%arg2d
-        mov fx_dstlen,%arg4
-#undef nrv_src
-#undef nrv_dst
-#undef arg2d
-#undef fx_dstlen
-        pop %arg1; pop %arg3  // MATCH_60
-
+section LZMA_ELF00  // fall-in from LZMA_HEAD (winpe) and decompress (Linux)
 //    (uchar const *src, size_t lsrc, uchar *dst, u32 &ldst, uint method)
 /* Arguments according to calling convention */
 #undef src
