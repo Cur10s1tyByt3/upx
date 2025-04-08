@@ -92,23 +92,23 @@ void PackW64PeAmd64::buildLoader(const Filter *ft) {
     addLoader(isdll ? "PEISDLL1" : "", "PEMAIN01", // outer "enter" (push rbp; mov rsp,rbp)
               icondir_count > 1 ? (icondir_count == 2 ? "PEICONS1" : "PEICONS2") : "",
               tmp_tlsindex ? "PETLSHAK" : "", "PEMAIN02");
+    // (ph.first_offset_found == 1 ? "PEMAIN03" : "")
 
-    // ph.first_offset_found == 1 ? "PEMAIN03" : "");
-
-    // LZMA_ELF00 has inner "enter" (push rbp; mov rsp,rbp)
-    // LZMA_TAIL  has inner 'leave' (mov rbp,rsp; pop rbp)
+    // This if-else corresponds to getDecompressorSections().
     if (M_IS_LZMA(ph.method)) {
+        // LZMA_ELF00 has inner "enter" (push rbp; mov rsp,rbp)
+        // LZMA_TAIL  has inner 'leave' (mov rbp,rsp; pop rbp)
         addLoader("LZMA_HEAD,LZMA_ELF00", (opt->small ? "LZMA_DEC10" : "LZMA_DEC20"), "LZMA_TAIL");
     } else {
         addLoader(M_IS_NRV2B(ph.method)   ? "NRV_HEAD,NRV2B"
                   : M_IS_NRV2D(ph.method) ? "NRV_HEAD,NRV2D"
                   : M_IS_NRV2E(ph.method) ? "NRV_HEAD,NRV2E"
-                                          : "UNKNOWN_COMPRESSION_METHOD",
-                  // getDecompressorSections(),
-                  /*multipass ? "PEMULTIP" :  */ "", "PEMAIN10");
+                                          : "UNKNOWN_COMPRESSION_METHOD");
     }
-    if (tmp_tlsindex)
-        addLoader("PETLSHAK2");
+
+    // (multipass ? "PEMULTIP" : "")
+    addLoader("PEMAIN10", (tmp_tlsindex ? "PETLSHAK2" : ""));
+
     if (ft->id) {
         const unsigned texv = ih.codebase - rvamin;
         assert(ft->calls > 0);
