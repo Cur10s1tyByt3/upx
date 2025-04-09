@@ -263,6 +263,8 @@ sz_auxv= 2*NBPW
         lwz r0,a_type(a0); lwz a1,a_val(a0); addi a0,a0,sz_auxv
         cmplwi cr0,r0,AT_NULL; bne+ cr0,0b
         mtctr a1  // escape hatch
+        li r0,4; tle a1,r0; tle r_exp,r0
+
 
         mr a0,r_ADRU
         mr a1,r_LENU
