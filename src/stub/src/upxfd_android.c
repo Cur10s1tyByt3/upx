@@ -176,6 +176,22 @@ extern int memfd_create(char const *name, unsigned flags);
 extern int ftruncate(int fd, size_t length);
 extern ssize_t write(int fd, void const *buf, size_t length);
 
+static void  // costly in size, but required for usability
+diagnose(int err_neg, char const *msg, unsigned len_msg)
+{
+    write(2, msg, len_msg);
+    char const *const hex = addr_string("0123456789abcdef");
+    char work[6];
+    int errno = -err_neg;
+    work[0] = '=';
+    work[1] = '0';
+    work[2] = 'x';
+    work[3] = hex[0xf & (errno >> 4)];
+    work[4] = hex[0xf & errno];
+    work[5] = '\n';
+    write(2, work, 6);
+}
+
 // upx_mmap_and_fd_android() must be first in the .o when compiled,
 // so prototype 'static' functions but put their definitions later.
 #if ANDROID_FRIEND  //{
@@ -218,7 +234,8 @@ unsigned long upx_mmap_and_fd_android( // returns (mapped_addr | (1+ fd))
         if (fd < 0) { // last chance for Linux
             fd = open(addr_string("/dev/shm"), O_RDWR | O_DIRECTORY | O_TMPFILE, 0700);
             if (fd < 0) {
-                my_bkpt(addr_string("memfd_create"));
+                diagnose(fd, addr_string("\\nmemfd/shm error"), 16);
+                return fd;
             }
         }
     }
@@ -253,12 +270,14 @@ unsigned long upx_mmap_and_fd_android( // returns (mapped_addr | (1+ fd))
         if ('\0' == pathname[0]) { // first time; create the pathname and file
             int rv = create_upxfn_path(pathname, &u.buf[BUFLEN / 2]);
             if (rv < 0) {
+                diagnose(rv, addr_string("\\ncreate"), 7);
                 return rv;
             }
         }
         // Use the constructed path.
         fd = open(pathname, O_CREAT|O_EXCL|O_RDWR, S_IRWXU);
         if (fd < 0) {
+            diagnose(fd, addr_string("\\nopen"), 5);
             return fd;
         }
         unlink(pathname);
@@ -279,6 +298,7 @@ unsigned long upx_mmap_and_fd_android( // returns (mapped_addr | (1+ fd))
         if (not_android) { // Linux ftruncate() is well-behaved
             int rv = ftruncate(fd, datlen);
             if (rv < 0) {
+                diagnose(rv, addr_string("\\nftruncate"), 10);
                 return rv;
             }
         }
@@ -301,6 +321,7 @@ unsigned long upx_mmap_and_fd_android( // returns (mapped_addr | (1+ fd))
     addr = (unsigned long)mmap(ptr, datlen , PROT_WRITE | PROT_READ,
         MAP_SHARED | (ptr ? MAP_FIXED : 0), fd, 0);
     if ((~0ul<<12) < addr) { // error
+        diagnose((unsigned long)ptr, addr_string("\\nmmap"), 5);
         return addr;
     }
     return addr | (1+ fd);

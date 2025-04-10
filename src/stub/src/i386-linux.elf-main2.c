@@ -33,12 +33,6 @@
 #define DEBUG 0
 #endif  //}
 
-#if defined(__powerpc__) //}{
-#  undef DEBUG
-#  define DEBUG 1
-#endif  //}
-
-
 #include "include/linux.h"
 
 #define MFD_EXEC 0x0010

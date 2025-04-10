@@ -59,13 +59,13 @@ HUMF_A          0x0000000000000000        0x4
 HUMF_L          0x0000000000000000        0x4
  HUMF_L         0x0000000000000000        0x4 tmp/arm.v4a-linux.elf-help_umf.o
 
-UMF_ANDROID     0x0000000000000000      0x544
- UMF_ANDROID    0x0000000000000000      0x544 tmp/arm.v4a-linux.elf-upxfd_android.o
-                0x00000000000002c4                upx_mmap_and_fd_android
+UMF_ANDROID     0x0000000000000000      0x658
+ UMF_ANDROID    0x0000000000000000      0x658 tmp/arm.v4a-linux.elf-upxfd_android.o
+                0x000000000000034c                upx_mmap_and_fd_android
 
-UMF_LINUX       0x0000000000000000      0x144
- UMF_LINUX      0x0000000000000000      0x144 tmp/arm.v4a-linux.elf-upxfd_linux.o
-                0x0000000000000000                upx_mmap_and_fd_linux
+UMF_LINUX       0x0000000000000000      0x238
+ UMF_LINUX      0x0000000000000000      0x238 tmp/arm.v4a-linux.elf-upxfd_linux.o
+                0x0000000000000088                upx_mmap_and_fd_linux
 
 EXP_HEAD        0x0000000000000000       0xdc
  EXP_HEAD       0x0000000000000000       0xdc tmp/arm.v4a-expand.o

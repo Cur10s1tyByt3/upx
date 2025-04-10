@@ -4,10 +4,10 @@ Sections:
 Idx Name          Size      VMA       LMA       File off  Algn  Flags
   0 HUMF_A        05  0  0  034  2**0  CONTENTS
   1 HUMF_L        05  0  0  039  2**0  CONTENTS
-  2 UMF_ANDROID   04bf  0  0  040  2**2  CONTENTS
-  3 UMF_LINUX     011f  0  0  0500  2**2  CONTENTS
-  4 ELFMAINX      0200  0  0  0620  2**2  CONTENTS
-  5 ELFMAINZ      0a  0  0  0820  2**0  CONTENTS
+  2 UMF_ANDROID   05bd  0  0  040  2**2  CONTENTS
+  3 UMF_LINUX     01f9  0  0  0600  2**2  CONTENTS
+  4 ELFMAINX      0200  0  0  07fc  2**2  CONTENTS
+  5 ELFMAINZ      0a  0  0  09fc  2**0  CONTENTS
 SYMBOL TABLE:
 00000000 l    d  ELFMAINX 0 ELFMAINX
 00000000 l    d  ELFMAINZ 0 ELFMAINZ
@@ -19,9 +19,9 @@ SYMBOL TABLE:
 00000200 g       ELFMAINX 0 upx_mmap_and_fd
 00000000         *UND* 0 O_BINFO
 000001d6 g       ELFMAINX 0 mempcpy
-00000000 g     F UMF_ANDROID 0235 upx_mmap_and_fd_android
+00000078 g     F UMF_ANDROID 02bb upx_mmap_and_fd_android
 0000017c g       ELFMAINX 0 mmap
-00000000 g     F UMF_LINUX 011f upx_mmap_and_fd_linux
+00000078 g     F UMF_LINUX 0181 upx_mmap_and_fd_linux
 0000019f g       ELFMAINX 0 uname
 0000018a g       ELFMAINX 0 get_upxfn_path
 00000000 g       ELFMAINX 0 _start
@@ -40,21 +40,20 @@ OFFSET   TYPE              VALUE
 
 RELOCATION RECORDS FOR [UMF_ANDROID]:
 OFFSET   TYPE              VALUE
-0000007c R_386_PC32        my_bkpt
-000000f1 R_386_PC32        get_upxfn_path
-0000016f R_386_PC32        get_page_mask
-000001e0 R_386_PC32        get_page_mask
-00000212 R_386_PC32        mmap
-00000249 R_386_PC32        memset
-00000298 R_386_PC32        my_bkpt
-0000035e R_386_PC32        my_bkpt
-00000392 R_386_PC32        mempcpy
-000003ee R_386_PC32        mempcpy
+0000017b R_386_PC32        get_upxfn_path
+00000237 R_386_PC32        get_page_mask
+000002c6 R_386_PC32        get_page_mask
+000002f8 R_386_PC32        mmap
+00000347 R_386_PC32        memset
+00000396 R_386_PC32        my_bkpt
+0000045c R_386_PC32        my_bkpt
+00000490 R_386_PC32        mempcpy
+000004ec R_386_PC32        mempcpy
 
 RELOCATION RECORDS FOR [UMF_LINUX]:
 OFFSET   TYPE              VALUE
-000000fd R_386_PC32        mmap
-00000104 R_386_PC32        get_page_mask
+000001bf R_386_PC32        mmap
+000001c6 R_386_PC32        get_page_mask
 
 RELOCATION RECORDS FOR [ELFMAINX]:
 OFFSET   TYPE              VALUE

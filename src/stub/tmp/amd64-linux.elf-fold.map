@@ -17,9 +17,9 @@ Linker script and memory map
                 0x000000000000088a                upx_main2
                 0x00000000000002c6                underlay
 
-UMF_LINUX       0x0000000000000000       0xf9
- UMF_LINUX      0x0000000000000000       0xf9 tmp/amd64-linux.elf-upxfd_linux.o
-                0x0000000000000000                upx_mmap_and_fd_linux
+UMF_LINUX       0x0000000000000000      0x19e
+ UMF_LINUX      0x0000000000000000      0x19e tmp/amd64-linux.elf-upxfd_linux.o
+                0x0000000000000067                upx_mmap_and_fd_linux
 
 .data           0x0000000000000000        0x0
  .data          0x0000000000000000        0x0 tmp/amd64-linux.elf-fold.o
@@ -89,6 +89,6 @@ EXP_TAIL        0x0000000000000000       0x14
  EXP_TAIL       0x0000000000000000       0x14 tmp/amd64-expand.o
                 0x0000000000000014                upx_mmap_and_fd
 
-STRCON          0x0000000000000000       0x53
- STRCON         0x0000000000000000       0x4b tmp/amd64-linux.elf-upxfd_linux.o
- STRCON         0x000000000000004b        0x8 tmp/amd64-linux.elf-main2.o
+STRCON          0x0000000000000000       0x86
+ STRCON         0x0000000000000000       0x7e tmp/amd64-linux.elf-upxfd_linux.o
+ STRCON         0x000000000000007e        0x8 tmp/amd64-linux.elf-main2.o

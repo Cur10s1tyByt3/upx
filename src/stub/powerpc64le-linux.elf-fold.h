@@ -33,8 +33,8 @@
 /* clang-format off */
 
 #define STUB_POWERPC64LE_LINUX_ELF_FOLD_SIZE    19369
-#define STUB_POWERPC64LE_LINUX_ELF_FOLD_ADLER32 0x2a64fcaa
-#define STUB_POWERPC64LE_LINUX_ELF_FOLD_CRC32   0x0fc49767
+#define STUB_POWERPC64LE_LINUX_ELF_FOLD_ADLER32 0x99c5fbc3
+#define STUB_POWERPC64LE_LINUX_ELF_FOLD_CRC32   0xdebc17db
 
 unsigned char stub_powerpc64le_linux_elf_fold[19369] = {
 /* 0x0000 */ 127, 69, 76, 70,  2,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -280,7 +280,7 @@ unsigned char stub_powerpc64le_linux_elf_fold[19369] = {
 /* 0x0f00 */ 232,255,161,235,240,255,193,235,248,255,225,235, 32,  0,128, 78,
 /* 0x0f10 */   0,  0,  0,  0,  0,  0,  0,  1,128,  7,  0,  0,153,  9,  0, 56,
 /* 0x0f20 */   8,  0,128,124, 32,  0,231,120, 90,  0,  0, 56,  2,  0,  0, 68,
-/* 0x0f30 */   8,  0,227, 64,255,255, 96, 56, 32,  0,128, 78, 91,  0,  0, 56,
+/* 0x0f30 */   8,  0,227, 64,208,  0, 99,124, 32,  0,128, 78, 91,  0,  0, 56,
 /* 0x0f40 */   8,  0,  0, 72,125,  0,  0, 56,  8,  0,  0, 72,144,  0,  0, 56,
 /* 0x0f50 */   8,  0,  0, 72, 93,  0,  0, 56,  8,  0,  0, 72,  1,  0,  0, 56,
 /* 0x0f60 */   8,  0,  0, 72, 45,  0,  0, 56,  8,  0,  0, 72, 85,  0,  0, 56,

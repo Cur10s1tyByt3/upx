@@ -366,7 +366,7 @@ mmap: .globl mmap
 sysgo:
         sc
         bns+ no_fail  // 'bns': branch if No Summary[Overflow]
-        li a0,-1  // failure; IGNORE errno
+        neg a0,a0  // failure: return -errno (always >[unsigned] PAGE_MASK)
 no_fail:
         ret
 

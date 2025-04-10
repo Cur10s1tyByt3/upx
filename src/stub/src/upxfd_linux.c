@@ -116,6 +116,22 @@ extern unsigned long get_page_mask(void);
 extern ssize_t write(int, void const *, size_t);
 void exit(int) __attribute__((__noreturn__,__nothrow__));
 
+static void  // costly in size, but required for usability
+diagnose(int err_neg, char const *msg, unsigned len_msg)
+{
+    write(2, msg, len_msg);
+    char const *const hex = addr_string("0123456789abcdef");
+    char work[6];
+    int errno = -err_neg;
+    work[0] = '=';
+    work[1] = '0';
+    work[2] = 'x';
+    work[3] = hex[0xf & (errno >> 4)];
+    work[4] = hex[0xf & errno];
+    work[5] = '\n';
+    write(2, work, 6);
+}
+
 // Implementation for Linux-native, where memfd_create
 // (or /dev/shm) works.  Saves space in contrast to
 // upxfd_android (or Android emulator), which must
@@ -145,18 +161,21 @@ unsigned long upx_mmap_and_fd_linux( // returns (mapped_addr | (1+ fd))
                 exit(127);
             }
             // Error from open() is unknown. Cause later SIGSEGV.
+            diagnose(fd, addr_string("\\nmemfd/shm error"), 16);
             return (unsigned long)(long)fd;  // -errno; high bits are all 1
         }
         // Beware: /dev/shm might limit write() to 8KiB at a time.
     }
     int rv = ftruncate(fd, datlen);
     if (rv < 0) {
+        diagnose(rv, addr_string("\\nftruncate"), 10);
         return (unsigned long)(long)rv;
     }
     ptr = mmap(ptr, datlen, PROT_READ|PROT_WRITE,
         (ptr ? MAP_FIXED : 0)|MAP_SHARED, fd, 0);
     unsigned long const page_mask = get_page_mask();
     if (page_mask <= (unsigned long)ptr) {
+        diagnose((unsigned long)ptr, addr_string("\\nmmap"), 5);
         return (unsigned long)ptr;  // -errno
     }
     return (unsigned long)ptr + (1+ (unsigned)fd);

@@ -23,13 +23,13 @@ HUMF_A          0x0000000000000000        0x5
 HUMF_L          0x0000000000000000        0x5
  HUMF_L         0x0000000000000000        0x5 tmp/i386-linux.elf-help_umf.o
 
-UMF_ANDROID     0x0000000000000000      0x4bf
- UMF_ANDROID    0x0000000000000000      0x4bf tmp/i386-linux.elf-upxfd_android.o
-                0x0000000000000000                upx_mmap_and_fd_android
+UMF_ANDROID     0x0000000000000000      0x5bd
+ UMF_ANDROID    0x0000000000000000      0x5bd tmp/i386-linux.elf-upxfd_android.o
+                0x0000000000000078                upx_mmap_and_fd_android
 
-UMF_LINUX       0x0000000000000000      0x11f
- UMF_LINUX      0x0000000000000000      0x11f tmp/i386-linux.elf-upxfd_linux.o
-                0x0000000000000000                upx_mmap_and_fd_linux
+UMF_LINUX       0x0000000000000000      0x1f9
+ UMF_LINUX      0x0000000000000000      0x1f9 tmp/i386-linux.elf-upxfd_linux.o
+                0x0000000000000078                upx_mmap_and_fd_linux
 
 .data           0x0000000000000000        0x0
  .data          0x0000000000000000        0x0 tmp/i386-linux.elf-fold.o
