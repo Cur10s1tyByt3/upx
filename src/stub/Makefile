@@ -1111,7 +1111,7 @@ arm64-darwin.macho-entry.h : $(srcdir)/src/$$T.S
 
 arm64-darwin.macho-fold.h : \
 	    tmp/$$T.o \
-            tmp/arm64-expand.o \
+	    tmp/arm64-expand.o \
 	    tmp/arm64-darwin.macho-main.o
 	$(call tc,ld) -r -Map tmp/$T.map $(filter %.o,$^) -o tmp/$T.bin
 	$(call tc,objdump) -Dr $(tc_objdump_disasm_options) tmp/$T.bin | $(RTRIM) > tmp/$T.bin.disasm

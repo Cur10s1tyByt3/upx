@@ -487,77 +487,40 @@ PackMachBase<T>::buildMachLoader(
     Filter const *ft
 )
 {
-    MemBuffer mb_cprLoader;
-    unsigned sz_cpr = 0;
-    unsigned sz_unc = 0;
-    unsigned method = 0;
-    upx_byte const *uncLoader = nullptr;
-    if (0 < szfold) { // main program with ELF2 de-compressor (folded portion)
-        initLoader(fold, szfold);
-        char sec[120]; memset(sec, 0, sizeof(sec));  // debug convenience
-        int len = 0;
-        unsigned m_decompr = methods_used | (1u << (0xFF & ph_forced_method(ph.method)));
-        len += snprintf(sec, sizeof(sec), "%s", ".text,EXP_HEAD");
-        if (((1u<<M_NRV2B_LE32)|(1u<<M_NRV2B_8)|(1u<<M_NRV2B_LE16)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2B");
-        }
-        if (((1u<<M_NRV2D_LE32)|(1u<<M_NRV2D_8)|(1u<<M_NRV2D_LE16)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2D");
-        }
-        if (((1u<<M_NRV2E_LE32)|(1u<<M_NRV2E_8)|(1u<<M_NRV2E_LE16)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "NRV2E");
-        }
-        if (((1u<<M_LZMA)) & m_decompr) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", (opt->small
-                ? "LZMA_DAISY,LZMA_ELF00,LZMA_DEC10,LZMA_DEC30"
-                : "LZMA_DAISY,LZMA_ELF00,LZMA_DEC20,LZMA_DEC30" ));
-        }
-        len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "EXP_TAIL");
-        if (hasLoaderSection("SYSCALLS")) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "SYSCALLS");
-        }
-        if (hasLoaderSection("STRCON")) {
-            len += snprintf(&sec[len], sizeof(sec) - len, ",%s", "STRCON");
-        }
-        (void)len;
-        NO_printf("\n%s\n", sec);
-        addLoader(sec, nullptr);
-        relocateLoader();
-        {
-            int sz_unc_int;
-            uncLoader = linker->getLoader(&sz_unc_int);
-            sz_unc = sz_unc_int;
-        }
-        method = M_NRV2B_LE32;  // requires unaligned fetch
-    }
+    initLoader(proto, szproto);
 
     struct b_info h; memset(&h, 0, sizeof(h));
-    h.b_method = method;
-    // Headers are NOT filtered, so Leave h.b_ftid and h.b_cto8 as zero.
+    unsigned fold_hdrlen = 0;
+  if (0 < szfold) {
+    h.sz_unc = (szfold < fold_hdrlen) ? 0 : (szfold - fold_hdrlen);
+    h.b_method = (unsigned char) ph.method;
+    h.b_ftid = (unsigned char) ph.filter;
+    h.b_cto8 = (unsigned char) ph.filter_cto;
+  }
+    unsigned char const *const uncLoader = fold_hdrlen + fold;
 
-    mb_cprLoader.allocForCompression(sizeof(h) + sz_unc);
-    unsigned char *const cprLoader = (unsigned char *)mb_cprLoader;  // less typing
+    MemBuffer cprLoader_buf(sizeof(h) + h.sz_unc);
+    unsigned char *const cprLoader = (unsigned char *)cprLoader_buf.getVoidPtr();
+  if (0 < szfold) {
+    unsigned sz_cpr = 0;
+    int r = upx_compress(uncLoader, h.sz_unc, sizeof(h) + cprLoader, &sz_cpr,
+        nullptr, ph.method, 10, nullptr, nullptr );
+    h.sz_cpr = sz_cpr;
+    if (r != UPX_E_OK || h.sz_cpr >= h.sz_unc)
+        throwInternalError("loader compression failed");
+  }
+    memcpy(cprLoader, &h, sizeof(h));
 
-    h.sz_unc = sz_unc;
-    h.sz_cpr = mb_cprLoader.getSize();  // max that upx_compress may use
-    {
-        int r = upx_compress(uncLoader, sz_unc, sizeof(h) + cprLoader, &sz_cpr,
-            nullptr, ph_forced_method(method), 10, nullptr, nullptr );
-        h.sz_cpr = sz_cpr;  // actual length used
-        if (r != UPX_E_OK || h.sz_cpr >= h.sz_unc)
-            throwInternalError("loader compression failed");
-    }
-    set_te32(&h.sz_cpr, h.sz_cpr);
-    set_te32(&h.sz_unc, h.sz_unc);
-    memcpy(cprLoader, &h, sizeof(h)); // cprLoader will become FOLDEXEC
+    // This adds the definition to the "library", to be used later.
+    linker->addSection("FOLDEXEC", cprLoader, sizeof(h) + h.sz_cpr, 0);
 
-    initLoader(proto, szproto, -1, sz_cpr);
-    NO_printf("FOLDEXEC unc=%#x  cpr=%#x\n", sz_unc, sz_cpr);
-    linker->addSection("FOLDEXEC", mb_cprLoader, sizeof(b_info) + sz_cpr, 0);
-   { // main program with MACH2 de-compressor
-        addLoader("MACHMAINX,MACHMAINZ,FOLDEXEC,IDENTSTR");
-        defineSymbols(ft);
-    }
+    int const GAP = 128;  // must match stub/l_mac_ppc.S
+    int const NO_LAP = 64;  // must match stub/src/*darwin*.S
+    segTEXT.vmsize = h.sz_unc - h.sz_cpr + GAP + NO_LAP;
+
+    addStubEntrySections(ft);
+
+    defineSymbols(ft);
     relocateLoader();
 }
 
