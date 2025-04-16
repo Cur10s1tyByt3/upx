@@ -97,11 +97,31 @@ Pprotect: .globl Pprotect
         add a1,a1,r0
         b mprotect
 
-Psync: .globl Psync
+Psync: .globl Psync  // (addr, len, flags)
         mflr r0; bl 0f; 0: mflr r6; mtlr r0; lwz r0,page_mask - 0b(r6)
         andc r0,a0,r0  // offset within page
         sub a0,a0,r0
         add a1,a1,r0
+
+// System calls write() and msync(,,MS_SYNC) should implicitly flush dcache
+// over the covered region before doing the write().
+// But strange errors were observed, so flush explicitly.
+CACHELINE=32
+sweep= a3  // temp addr
+dlast= a4  // final addr
+        add dlast,a0,a1  // addr + len
+        addi dlast,dlast,-1  // highest covered addr
+        ori sweep,a0,-1+ CACHELINE  // highest addr on initial cache line
+fl_loop:
+        dcbst  0,sweep  // initiate store (modified) cacheline to memory
+        cmpl cr0,sweep,dlast  // did we cover the highest-addressed byte?
+        icbi   0,sweep  // discard instructions from cacheline
+        addi     sweep,sweep,CACHELINE  // highest addr on next line
+        blt  cr0,fl_loop  // not done yet
+
+        sync   // wait for all memory operations to finish
+        isync  // discard prefetched instructions (if any)
+
         b msync
 
 Pmap: .globl Pmap
@@ -263,8 +283,6 @@ sz_auxv= 2*NBPW
         lwz r0,a_type(a0); lwz a1,a_val(a0); addi a0,a0,sz_auxv
         cmplwi cr0,r0,AT_NULL; bne+ cr0,0b
         mtctr a1  // escape hatch
-        li r0,4; tle a1,r0; tle r_exp,r0
-
 
         mr a0,r_ADRU
         mr a1,r_LENU
@@ -322,7 +340,10 @@ munmap: .globl munmap
 mmap: .globl mmap
         li r0,SYS_mmap
 sysgo:
-#define TRACE 1
+#ifndef TRACE  //{
+#define TRACE 0
+#endif  //}
+
 #if TRACE  //{
 FD_STDERR= 2
 Tr1= 0*NBPW
