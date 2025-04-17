@@ -66,7 +66,7 @@ d790e823be29f042f0abb71205b226c88b63e228a8f0099cd176d779e708685e *mips-linux.elf
 e188225afe6ed6446027df13fcc78f273062462fd4b780202a69df432a1f9944 *mipsel-linux.elf/upx-3.95
 ef6973db0f9a1ad759c6290a07e7e481d82d468b36e7b9b8661ab65970289ff8 *powerpc-linux.elf/upx-3.91
 d1fda2e40d6cde63ae28dd62922319475bba53bef4313671e57a4102205ccddc *powerpc-linux.elf/upx-3.95
-9707d56b97a878716715a4ea5d2725874314f95d419df9dcf36c6920b822a63f *powerpc64le-linux.elf/upx-3.95
+51bdf12cd3d64e8f6aa5859073c25c867fb17ef57d9b04c7f8af2a8d1ce56007 *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t120_compress_ucl_nrv2d_3_no_filter="\
 0df7322f0e0c72bac18e23f45ced45e442bd135183c063d1e7fd77d3ffc368c3 *amd64-linux.elf/upx-3.91
@@ -89,7 +89,7 @@ eba33a75c261eaa8d558c05d88910331e0dfe20945eae296ed17b21525dd0e95 *armeb-linux.el
 eab36dc7153eaac876a81a62a7e3a75a7fd24d5def5188236fe41ac7cc9724e9 *mipsel-linux.elf/upx-3.95
 555af9e6a0dca58082d287bc3e471918e1ea1c681356ee840a3413b06c575a47 *powerpc-linux.elf/upx-3.91
 c0e10468042547a4ff2723727e8b15de20e2a544cdfd7a88ddb6d9e8fbc6b38e *powerpc-linux.elf/upx-3.95
-4e7d18a7a31244e05addfc122b58b66fac6919f959468ff3a31f54d2e62029b0 *powerpc64le-linux.elf/upx-3.95
+223259801f1c1ce3e14c5ef948d6214fa32702d8e00a1f017c855f12abc1ed15 *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t130_compress_ucl_nrv2e_3_no_filter="\
 727a892760395c92a390fb109d42f0f16f24408f92a1bb1dce30947b3a80036b *amd64-linux.elf/upx-3.91
@@ -112,7 +112,7 @@ c78db15a8113b806e56812fd842fb467d2a9c9557fcdc0467dae3f4c33316630 *i386-win32.pe/
 d33531ff51ca68e9f413471810f5334e9af8557b96acdbc9582e5df7d9287532 *mipsel-linux.elf/upx-3.95
 fc11743375123792043dbbd8a2f88e4fb98b9b6cc0bb575ccd128cc92c0c598f *powerpc-linux.elf/upx-3.91
 73d89b01fbbbd0d96ea32f3801c29cd8f627402c248b2964fc336ca65a2ac3b9 *powerpc-linux.elf/upx-3.95
-94d84a94a2b3c88d834250aba9199fdee5f17912749ce38fd5b32c5c77901492 *powerpc64le-linux.elf/upx-3.95
+786d520d9814a64d9ce248cf3c5871a105b50204480d05e6efda1ecd139da279 *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t140_compress_lzma_2_no_filter="\
 3991af4251f93ed59751efeb593ad2392e0444aeae06e441c6716506c751f373 *amd64-linux.elf/upx-3.91
@@ -135,7 +135,7 @@ cbd713f5e414ae2e8bc119728f4fedd7d93efeb66739596adca2325bdcea41f9 *mipsel-linux.e
 1e759075596f8d2f627f55b7e252061c67f36244417ada14e41e150cfcad2ccf *mipsel-linux.elf/upx-3.95
 70f0511b561be18c9cf17585b018dba716de132723b5acbee8ead06ee4835f30 *powerpc-linux.elf/upx-3.91
 29ff2fed095128a16900eed7659ca590ce6f1edba58ebf0db320eb1210bea572 *powerpc-linux.elf/upx-3.95
-2358a33f1f5112c87eb7e7777b383976781cfb362a0e6b0620554838c3c26c47 *powerpc64le-linux.elf/upx-3.95
+a32943d991d7fe58584f7283bbbb2b61eed5ce2bbe9f0486a449ccbe1c0074a3 *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t150_compress_ucl_2_all_filters="\
 93b94ea66943f4981b68dbe9d72900e6e8bd8ed7319a252bd5ea86e01f98d8d6 *amd64-linux.elf/upx-3.91
@@ -158,7 +158,7 @@ e5fbb95e8ad8d5eafc0ea1894b21e6c17fbeffe493544da396884df5388ca847 *mips-linux.elf
 e8d67346ad4ada869335bfb73998f6ce786225aad7053224efdaddd29614b58c *mipsel-linux.elf/upx-3.95
 2f72fb272b22a2a86611f7c3e5f810f36d2cfcb0d78b76b1656320c073a3ac47 *powerpc-linux.elf/upx-3.91
 89b57256b58c7175d2e9259f8d164c39d3702016a3fe6d94d4eed1c555333225 *powerpc-linux.elf/upx-3.95
-40ef133ef445e0162054556d5fcc85d8d7738887f43e0aab592093369f5f2e9f *powerpc64le-linux.elf/upx-3.95
+1cbf03c7a4fc1fbd37c41015e3067fd5053c5cd374122753156d65e2fc42760c *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t160_compress_all_methods_1_no_filter="\
 3c19c35e91fc95917890704e0800dc6225307920c71212009a4caad78b69ea1d *amd64-linux.elf/upx-3.91
@@ -181,7 +181,7 @@ f3d33c5c9809943a902133490bcf0cfbe39a5ef1635a0c29b3bdc4f35dfffa50 *i386-win32.pe/
 99a335f2eb49a724415ca5ff2518659fec6810110e95fc2aa5647a0d677720e6 *mipsel-linux.elf/upx-3.95
 ab0fe7ba0befd75d1243166d2180f9ac9ec267bfcde1b796646913aa580bdbc5 *powerpc-linux.elf/upx-3.91
 0ed471a832fac8c3d435f56bc6a840aac2c6222e712eeabc868bf8944d49c5a3 *powerpc-linux.elf/upx-3.95
-fc9feb22dcbe188d87e27ec724ac3b56a19087ec734f2d80d99a49893481a8d6 *powerpc64le-linux.elf/upx-3.95
+f41cbe25cc1441b37fd1f7007d167af0decbf48fa9800594cddcc9d3d04164cf *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t170_compress_all_methods_no_lzma_5_no_filter="\
 7b0e4074554712706255e27625105929a8532cb06263b3c95bf422c12fa6adbe *amd64-linux.elf/upx-3.91
@@ -204,6 +204,6 @@ a08aff8b3d32a6e9f271593c300a9efd36397ead93540e55c671ba3aa64f7f39 *mipsel-linux.e
 090eff7b1e473dd3543949a176520a07d71fa9fb3ce685c4a65f0cca879f9786 *mipsel-linux.elf/upx-3.95
 6a4e623c7f175369ae7b088e874500c3e05c2a0c98db00a045e6aef840e4ee53 *powerpc-linux.elf/upx-3.91
 037344c37bec4919d4035743439b89f7dab5ae3d90305faa54ffac65adc1070d *powerpc-linux.elf/upx-3.95
-4d8ea1a2a10c9ef18ef429e8950ba75adeeb12da60c6169dc1c6449240cd44c6 *powerpc64le-linux.elf/upx-3.95
+eed4a5740e44cf1ca7b8d39279f7203d7948be92b7455fdbefdee129c3c65134 *powerpc64le-linux.elf/upx-3.95
 "
 ########## end .sha256sums.recreate

@@ -128,11 +128,32 @@ Pprotect: .globl Pprotect
         add a1,a1,r0
         b mprotect
 
-Psync: .globl Psync
-        mflr r0; bl 0f; 0: mflr r6; mtlr r0; ld r0,page_mask - 0b(r6)
+Psync: .globl Psync  // (addr, len, flags)
+        mflr r0; bl 0f; 0: mflr r6; mtlr r0; lwz r0,page_mask - 0b(r6)
         andc r0,a0,r0  // offset within page
         sub a0,a0,r0
         add a1,a1,r0
+
+// System calls write() and msync(,,MS_SYNC) should implicitly flush dcache
+// over the covered region before doing the write().
+// But strange errors were observed, so flush explicitly.
+// Same code as for powerpc32, but with larger CACHELINE.
+CACHELINE=128
+sweep= a3  // temp addr
+dlast= a4  // final addr
+        add dlast,a0,a1  // addr + len
+        addi dlast,dlast,-1  // highest covered addr
+        ori sweep,a0,-1+ CACHELINE  // highest addr on initial cache line
+fl_loop:
+        dcbst  0,sweep  // initiate store (modified) cacheline to memory
+        cmpl cr0,sweep,dlast  // did we cover the highest-addressed byte?
+        icbi   0,sweep  // discard instructions from cacheline
+        addi     sweep,sweep,CACHELINE  // highest addr on next line
+        blt  cr0,fl_loop  // not done yet
+
+        sync   // wait for all memory operations to finish
+        isync  // discard prefetched instructions (if any)
+
         b msync
 
 Pmap: .globl Pmap
