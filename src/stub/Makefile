@@ -395,7 +395,10 @@ amd64-darwin.macho-entry.h : $(srcdir)/src/$$T.S
 #     -Map tmp/amd64-darwin.macho-fold.map \
 #     tmp/amd64-darwin.macho-fold.o tmp/amd64-darwin.macho-main.o \
 #     -o tmp/amd64-darwin.macho-fold.bin
-amd64-darwin.macho-fold.h : tmp/$$T.o tmp/amd64-darwin.macho-main.o
+amd64-darwin.macho-fold.h : \
+	    tmp/$$T.o \
+	    tmp/amd64-expand.o \
+	    tmp/amd64-darwin.macho-main.o
 	$(call tc,ld) --no-warn-mismatch --strip-all --oformat binary -Map tmp/$T.map $(filter %.o,$^) -o tmp/$T.bin
 	chmod a-x tmp/$T.bin
 	$(call tc,bin2h) tmp/$T.bin $@
