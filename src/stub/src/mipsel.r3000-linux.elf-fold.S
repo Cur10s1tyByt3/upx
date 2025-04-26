@@ -334,6 +334,14 @@ Psync: .globl Psync
         and TMP,a0,v0
         sub a0,TMP
         add a1,TMP
+
+__NR_cacheflush = 147+ __NR_Linux
+/* asm/cachectl.h */
+ICACHE= 1<<0
+DCACHE= 1<<1
+        li a2,DCACHE
+        li v0,__NR_cacheflush; syscall  // ignore failure
+
         li v0,__NR_msync; syscall
         jr ra
           addiu sp,2*NBPW
