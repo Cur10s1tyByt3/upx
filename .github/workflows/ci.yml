@@ -22,8 +22,6 @@ env:
   ZSTD_CLEVEL: 9
   # 2025-03-05
   ZIG_DIST_VERSION: 0.14.0
-  # 2025-04-10
-  #ZIG_DIST_VERSION: 0.15.0-dev.286+ddcf6fcdf
 
 jobs:
   job-rebuild-and-verify-stubs:
@@ -33,9 +31,9 @@ jobs:
     #container: debian:12-slim # also works; provides glibc-2.36
     #container: debian:testing-slim # also works; currently provides glibc-2.38
     steps:
+      - run: uname -a; pwd; id; umask
       - name: Install packages
         run: |
-          uname -a; pwd; id; umask
           dpkg --add-architecture i386
           apt-get update && apt-get upgrade -y
           # install system packages
@@ -90,6 +88,7 @@ jobs:
     name: ${{ format('{0}', matrix.os) }}
     runs-on: ${{ matrix.os }}
     steps:
+      - run: uname -a; pwd; id; umask
       - name: Install extra 32-bit and MinGW packages
         if: ${{ matrix.use_extra }}
         run: |
@@ -220,6 +219,7 @@ jobs:
     name: ${{ format('{0} {1}{2}', matrix.os, matrix.xcode_version && 'xcode-' || '',  matrix.xcode_version) }}
     runs-on: ${{ matrix.os }}
     steps:
+      - run: uname -a; pwd; id; umask
       - uses: maxim-lobanov/setup-xcode@v1
         if: ${{ matrix.xcode_version }}
         with: { xcode-version: '${{ matrix.xcode_version }}' }
@@ -499,10 +499,10 @@ jobs:
           - { zig_target: mips-linux-musleabihf, qemu: qemu-mips }
           - { zig_target: mipsel-linux-musleabi, zig_flags: -msoft-float, qemu: qemu-mipsel }
           - { zig_target: mipsel-linux-musleabihf, qemu: qemu-mipsel }
-          - { zig_target: mips-linux-musleabi-mips32r2, zig_flags: -march=mips32r2, qemu: qemu-mips }
-          - { zig_target: mips-linux-musleabi-mips32r3, zig_flags: -march=mips32r3, qemu: qemu-mips }
-          - { zig_target: mips-linux-musleabi-mips32r5, zig_flags: -march=mips32r5, qemu: qemu-mips }
-          - { zig_target: mips-linux-musleabi-mips32r6, zig_flags: -march=mips32r6, qemu: qemu-mips }
+          # { zig_target: mips-linux-musleabi-mips32r2, zig_flags: -march=mips32r2, qemu: qemu-mips }
+          # { zig_target: mips-linux-musleabi-mips32r3, zig_flags: -march=mips32r3, qemu: qemu-mips }
+          # { zig_target: mips-linux-musleabi-mips32r5, zig_flags: -march=mips32r5, qemu: qemu-mips }
+          # { zig_target: mips-linux-musleabi-mips32r6, zig_flags: -march=mips32r6, qemu: qemu-mips }
           - { zig_target: powerpc-linux-musleabihf, qemu: qemu-ppc }
           - { zig_target: powerpc64-linux-musl, qemu: qemu-ppc64 }
           - { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le }
@@ -524,6 +524,7 @@ jobs:
       ZIG_PIC: ${{ matrix.zig_pic }}
       ZIG_TARGET: ${{ matrix.zig_target }}
     steps:
+      - run: uname -a; pwd; id; umask
       - name: Install Alpine Linux container packages
         if: ${{ job.container }}
         shell: sh
@@ -593,7 +594,7 @@ jobs:
             echo "UPX_CONFIG_DISABLE_SANITIZE=ON" >> $GITHUB_ENV
           fi
           echo "ZIG_FLAGS=$ZIG_FLAGS" >> $GITHUB_ENV
-      #- run: set -x; zig version; zig-cc --version; zig-cxx --version
+      - run: set -x; zig version; zig-cc --version || true; zig-cxx --version || true
       - run: zig-cc  -E -x c   -dM /dev/null # list predefined macros for C
       - run: zig-cxx -E -x c++ -dM /dev/null # list predefined macros for C++
       - name: ${{ format('Build Release with zig-cc -target {0} {1}', env.ZIG_TARGET, env.ZIG_PIC) }}

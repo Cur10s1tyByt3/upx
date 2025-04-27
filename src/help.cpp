@@ -220,7 +220,6 @@ void show_help(int verbose) {
                 "%s"
                 "  -d     decompress                        -l    list compressed file\n"
                 "  -t     test compressed file              -V    display version number\n"
-                "  --fileinfo   show parameters of already-compressed file\n"
                 "  -h     give %s help                    -L    display software license\n%s",
                 verbose == 0 ? "" : "  --best compress best (can be slow for big files)\n",
                 verbose == 0 ? "more" : "this", verbose == 0 ? "" : "\n");
