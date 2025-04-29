@@ -7,12 +7,12 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x0000000000000000      0xd64
- .text          0x0000000000000000      0xd64 tmp/mipsel.r3000-linux.elf-fold.o
+.text           0x0000000000000000      0xd6c
+ .text          0x0000000000000000      0xd6c tmp/mipsel.r3000-linux.elf-fold.o
                 0x00000000000000d0                get_page_mask
                 0x00000000000000f0                get_upxfn_path
-                0x0000000000000cf8                underlay
-                0x0000000000000b68                upx_main
+                0x0000000000000d00                underlay
+                0x0000000000000b70                upx_main
                 0x0000000000000010                get4unal
                 0x0000000000000128                close
 
