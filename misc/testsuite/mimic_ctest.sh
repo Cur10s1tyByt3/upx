@@ -49,19 +49,19 @@ echo "run_upx='${run_upx[*]}'"
 
 ## jreiser test 2025-07-14
 cat  > catch-sigsegv.gdb  <<'EOF'
-	catch signal SIGSEGV
-	commands
-	x/i $pc
-	info reg
-	x/16i $pc-0x20
-	end
+    catch signal SIGSEGV
+    commands
+    x/i $pc
+    info reg
+    x/16i $pc-0x20
+    end
 
-	catch signal SIGTRAP
-	commands
-	x/i $pc
-	info reg
-	x/16i $pc-0x20
-	end
+    catch signal SIGTRAP
+    commands
+    x/i $pc
+    info reg
+    x/16i $pc-0x20
+    end
 EOF
 catcher=$(readlink -f catch-sigsegv.gdb)
 
