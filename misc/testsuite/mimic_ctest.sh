@@ -47,6 +47,33 @@ fi
 run_upx=( "${emu[@]}" "$upx_exe" )
 echo "run_upx='${run_upx[*]}'"
 
+## jreiser test 2025-07-14
+cat  > catch-sigsegv.gdb  <<'EOF'
+	catch signal SIGSEGV
+	commands
+	x/i $pc
+	info reg
+	x/16i $pc-0x20
+	end
+
+	catch signal SIGTRAP
+	commands
+	x/i $pc
+	info reg
+	x/16i $pc-0x20
+	end
+EOF
+catcher=$(readlink -f catch-sigsegv.gdb)
+
+function emu_gdb () {
+    /usr/bin/gdb -q -x "$catcher" <<end_go --args "$@"
+    run
+end_go
+}
+emu=(emu_gdb)
+
+## end jreiser test 2025-07-14
+
 # run_upx sanity check
 if ! "${run_upx[@]}" --version-short >/dev/null; then echo "UPX-ERROR: FATAL: upx --version-short FAILED"; exit 1; fi
 if ! "${run_upx[@]}" -L >/dev/null 2>&1; then echo "UPX-ERROR: FATAL: upx -L FAILED"; exit 1; fi
