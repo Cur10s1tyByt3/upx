@@ -135,7 +135,9 @@ fo="--force-overwrite"
 "${run_upx[@]}" -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed-fa${exe}
 "${run_upx[@]}" -3 --no-filter   "${upx_self_exe}" ${fo} -o upx-packed-fn${exe}
 "${run_upx[@]}" -3 --all-filters --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-fr${exe}
+set -x
 "${run_upx[@]}" -3 --nrv2b       "${upx_self_exe}" ${fo} -o upx-packed-nrv2b${exe}
+set +x
 "${run_upx[@]}" -3 --nrv2d       "${upx_self_exe}" ${fo} -o upx-packed-nrv2d${exe}
 "${run_upx[@]}" -3 --nrv2e       "${upx_self_exe}" ${fo} -o upx-packed-nrv2e${exe}
 "${run_upx[@]}" -1 --lzma        "${upx_self_exe}" ${fo} -o upx-packed-lzma${exe}
