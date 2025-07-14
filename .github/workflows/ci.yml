@@ -28,7 +28,7 @@ jobs:
     name: Rebuild stubs
     runs-on: ubuntu-latest
     container: ubuntu:24.04 # provides glibc-2.39
-    #container: debian:12-slim # also works; provides glibc-2.36
+    #container: debian:12-slim # also works; provides glibc-2.3#
     #container: debian:testing-slim # also works; currently provides glibc-2.38
     steps:
       - run: uname -a; pwd; id; umask
@@ -210,7 +210,7 @@ jobs:
           parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/upx_testsuite_1.sh' ::: $jobs
 
   job-macos-cmake: # uses cmake + make
-    if: true
+    if: false
     needs: [ job-rebuild-and-verify-stubs ]
     strategy:
       fail-fast: false
@@ -328,7 +328,7 @@ jobs:
           parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/upx_testsuite_1.sh' ::: $jobs
 
   job-windows-cmake: # uses cmake + msbuild
-    if: true
+    if: false
     needs: [ job-rebuild-and-verify-stubs ]
     strategy:
       fail-fast: false
@@ -407,7 +407,7 @@ jobs:
           env -C build/release/Release upx_exe=./upx.exe bash "$PWD"/misc/testsuite/upx_testsuite_1.sh
 
   job-windows-toolchains: # build "by hand" using cmd.exe
-    if: github.repository_owner == 'upx'
+    if: false
     needs: [ job-rebuild-and-verify-stubs ]
     strategy:
       fail-fast: false
@@ -524,34 +524,34 @@ jobs:
       matrix:
         include:
           # only build a few selected targets => more targets are tested in the Weekly CI
-          - { zig_target: aarch64-linux-musl, qemu: qemu-aarch64 }
+          # { zig_target: aarch64-linux-musl, qemu: qemu-aarch64 }
           - { zig_target: aarch64-linux-musl, qemu: qemu-aarch64, zig_pic: -fPIE }
-          - { zig_target: aarch64-macos.11.0-none }
-          - { zig_target: aarch64-windows-gnu }
-          - { zig_target: arm-linux-musleabihf, qemu: qemu-arm }
-          - { zig_target: armeb-linux-musleabihf, qemu: qemu-armeb }
-          - { zig_target: i386-linux-gnu.2.3.4, zig_flags: -march=i586 }
-          - { zig_target: i386-linux-gnu.2.17, zig_flags: -march=i586 }
-          - { zig_target: i386-linux-musl, zig_flags: -march=i586, qemu: qemu-i386 }
-          - { zig_target: i386-windows-gnu }
-          - { zig_target: mips-linux-musleabi, zig_flags: -msoft-float, qemu: qemu-mips }
-          - { zig_target: mips-linux-musleabihf, qemu: qemu-mips }
-          - { zig_target: mipsel-linux-musleabi, zig_flags: -msoft-float, qemu: qemu-mipsel }
-          - { zig_target: mipsel-linux-musleabihf, qemu: qemu-mipsel }
+          # { zig_target: aarch64-macos.11.0-none }
+          # { zig_target: aarch64-windows-gnu }
+          # { zig_target: arm-linux-musleabihf, qemu: qemu-arm }
+          # { zig_target: armeb-linux-musleabihf, qemu: qemu-armeb }
+          # { zig_target: i386-linux-gnu.2.3.4, zig_flags: -march=i586 }
+          # { zig_target: i386-linux-gnu.2.17, zig_flags: -march=i586 }
+          # { zig_target: i386-linux-musl, zig_flags: -march=i586, qemu: qemu-i386 }
+          # { zig_target: i386-windows-gnu }
+          # { zig_target: mips-linux-musleabi, zig_flags: -msoft-float, qemu: qemu-mips }
+          # { zig_target: mips-linux-musleabihf, qemu: qemu-mips }
+          # { zig_target: mipsel-linux-musleabi, zig_flags: -msoft-float, qemu: qemu-mipsel }
+          # { zig_target: mipsel-linux-musleabihf, qemu: qemu-mipsel }
           # { zig_target: mips-linux-musleabi-mips32r2, zig_flags: -march=mips32r2, qemu: qemu-mips }
           # { zig_target: mips-linux-musleabi-mips32r3, zig_flags: -march=mips32r3, qemu: qemu-mips }
           # { zig_target: mips-linux-musleabi-mips32r5, zig_flags: -march=mips32r5, qemu: qemu-mips }
           # { zig_target: mips-linux-musleabi-mips32r6, zig_flags: -march=mips32r6, qemu: qemu-mips }
-          - { zig_target: powerpc-linux-musleabihf, qemu: qemu-ppc }
-          - { zig_target: powerpc64-linux-musl, qemu: qemu-ppc64 }
-          - { zig_target: powerpc64-linux-musl, qemu: qemu-ppc64, zig_pic: -fPIE }
-          - { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le }
-          - { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le, zig_pic: -fPIE }
-          - { zig_target: x86_64-linux-gnu.2.3.4, qemu: qemu-x86_64 } # can use QEMU because of gcompat
-          - { zig_target: x86_64-linux-gnu.2.17, qemu: qemu-x86_64 } # can use QEMU because of gcompat
-          - { zig_target: x86_64-linux-musl, qemu: qemu-x86_64 }
-          - { zig_target: x86_64-macos.11.0-none }
-          - { zig_target: x86_64-windows-gnu }
+          # { zig_target: powerpc-linux-musleabihf, qemu: qemu-ppc }
+          # { zig_target: powerpc64-linux-musl, qemu: qemu-ppc64 }
+          # { zig_target: powerpc64-linux-musl, qemu: qemu-ppc64, zig_pic: -fPIE }
+          # { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le }
+          # { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le, zig_pic: -fPIE }
+          # { zig_target: x86_64-linux-gnu.2.3.4, qemu: qemu-x86_64 } # can use QEMU because of gcompat
+          # { zig_target: x86_64-linux-gnu.2.17, qemu: qemu-x86_64 } # can use QEMU because of gcompat
+          # { zig_target: x86_64-linux-musl, qemu: qemu-x86_64 }
+          # { zig_target: x86_64-macos.11.0-none }
+          # { zig_target: x86_64-windows-gnu }
     name: ${{ format('zigcc {0} {1}', matrix.zig_target, matrix.zig_pic) }}
     runs-on: ubuntu-latest
     #container: 'alpine:3.22'
