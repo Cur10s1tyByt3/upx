@@ -571,7 +571,7 @@ jobs:
         if: ${{ job.container }}
         shell: sh
         run: |
-          apk update && apk upgrade && apk add bash cmake curl file gdb git make parallel patch tar util-linux xz zstd
+          apk update && apk upgrade && apk add bash cmake curl file gdb git make parallel patch strace tar util-linux xz zstd
           # set PATH like in Ubuntu
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
           git config --global --add safe.directory '*' # needed when running in a container
