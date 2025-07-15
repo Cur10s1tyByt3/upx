@@ -55,22 +55,28 @@ cat  > catch-sigsegv.gdb  <<'EOF'
     info reg
     x/16i $pc-0x20
     end
-
-    catch signal SIGTRAP
-    commands
-    x/i $pc
-    info reg
-    x/16i $pc-0x20
-    end
 EOF
 catcher=$(readlink -f catch-sigsegv.gdb)
 
 function emu_gdb () {
+    echo; echo emu_gdb "$@"
     /usr/bin/gdb -q -x "$catcher" <<end_go --args "$@"
     run
+    q
 end_go
+    echo
 }
 emu=(emu_gdb)
+
+function gdb_upx () {
+    echo; echo gdb_upx "$@"
+    /usr/bin/gdb -q -x "$catcher" <<end_go --args "$upx_exe" "$@"
+    run
+    q
+end_go
+    echo
+}
+run_upx=( gdb_upx )
 
 ## end jreiser test 2025-07-14
 
@@ -135,9 +141,7 @@ fo="--force-overwrite"
 "${run_upx[@]}" -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed-fa${exe}
 "${run_upx[@]}" -3 --no-filter   "${upx_self_exe}" ${fo} -o upx-packed-fn${exe}
 "${run_upx[@]}" -3 --all-filters --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-fr${exe}
-set -x
 "${run_upx[@]}" -3 --nrv2b       "${upx_self_exe}" ${fo} -o upx-packed-nrv2b${exe}
-set +x
 "${run_upx[@]}" -3 --nrv2d       "${upx_self_exe}" ${fo} -o upx-packed-nrv2d${exe}
 "${run_upx[@]}" -3 --nrv2e       "${upx_self_exe}" ${fo} -o upx-packed-nrv2e${exe}
 "${run_upx[@]}" -1 --lzma        "${upx_self_exe}" ${fo} -o upx-packed-lzma${exe}
