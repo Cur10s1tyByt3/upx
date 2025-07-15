@@ -517,7 +517,7 @@ jobs:
           env -C build/$C/$B/upx upx_exe=./upx.exe bash "$PWD"/misc/testsuite/upx_testsuite_1.sh
 
   job-linux-zigcc: # uses cmake + make
-    if: false
+    if: github.repository_owner == 'upx'
     needs: [ job-rebuild-and-verify-stubs ]
     strategy:
       fail-fast: false
