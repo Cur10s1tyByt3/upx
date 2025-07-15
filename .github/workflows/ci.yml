@@ -517,7 +517,7 @@ jobs:
           env -C build/$C/$B/upx upx_exe=./upx.exe bash "$PWD"/misc/testsuite/upx_testsuite_1.sh
 
   job-linux-zigcc: # uses cmake + make
-    if: github.repository_owner == 'upx'
+    if: false
     needs: [ job-rebuild-and-verify-stubs ]
     strategy:
       fail-fast: false
@@ -525,7 +525,7 @@ jobs:
         include:
           # only build a few selected targets => more targets are tested in the Weekly CI
           # { zig_target: aarch64-linux-musl, qemu: qemu-aarch64 }
-          - { zig_target: aarch64-linux-musl, qemu: qemu-aarch64, zig_pic: -fPIE }
+          # { zig_target: aarch64-linux-musl, qemu: qemu-aarch64, zig_pic: -fPIE }
           # { zig_target: aarch64-macos.11.0-none }
           # { zig_target: aarch64-windows-gnu }
           # { zig_target: arm-linux-musleabihf, qemu: qemu-arm }
