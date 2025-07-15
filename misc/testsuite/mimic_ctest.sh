@@ -137,6 +137,9 @@ exe=".out"
 upx_self_exe=$upx_exe
 fo="--force-overwrite"
 
+echo; echo ===== upx_exe '==>' $(file $upx_exe) =====
+uname -a; echo
+
 "${run_upx[@]}" -3               "${upx_self_exe}" ${fo} -o upx-packed${exe}
 "${run_upx[@]}" -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed-fa${exe}
 "${run_upx[@]}" -3 --no-filter   "${upx_self_exe}" ${fo} -o upx-packed-fn${exe}
