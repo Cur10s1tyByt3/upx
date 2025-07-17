@@ -81,6 +81,41 @@ jobs:
           find ./src/stub/src -type d -name tmp -print0 | xargs -0r rmdir -v --
       - run: git status --ignored || true
 
+  job-linux-cmake-0: # uses cmake + make
+    if: true
+    needs: [ job-rebuild-and-verify-stubs ]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04 }
+    name: ${{ format('{0}', matrix.os) }}-0
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: uname -a; pwd; id; umask
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y gdb parallel
+      - uses: actions/checkout@v4
+        with: { submodules: true }
+      - run: make build/extra/gcc/all
+      - run: make build/extra/clang/all
+      - name: Make artifact
+        run: |
+          N=$(echo "upx-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}-${{ matrix.os }}-0" | sed 's/[^0-9a-zA-Z_.-]/-/g')
+          mkdir -p "tmp/artifact/$N"
+          (cd build && shopt -s nullglob && cp -ai --parents */upx{,.exe} */*/*/upx{,.exe} "../tmp/artifact/$N")
+          if command -v hardlink >/dev/null; then (cd "tmp/artifact/$N" && hardlink .) fi
+          (cd tmp/artifact && tar --sort=name --zstd -cf "$N.tar.zst" "$N" && rm -rf "./$N" && ls -la && zstd -tq "$N.tar.zst")
+          echo "artifact_name=$N" >> $GITHUB_ENV
+      - name: ${{ format('Upload artifact {0}', env.artifact_name) }}
+        uses: actions/upload-artifact@v4
+        with: { name: '${{ env.artifact_name }}', path: tmp/artifact }
+      - name: Mimic ctest tests
+        run: |
+          jobs="gcc/debug gcc/release clang/debug clang/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest_sigsegv.sh' ::: $jobs
+
   job-linux-cmake: # uses cmake + make
     if: true
     needs: [ job-rebuild-and-verify-stubs ]

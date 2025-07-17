@@ -24,12 +24,13 @@ commands
     x/16i $pc-0x20
 end
 EOF
+
 catcher=$(readlink -fn catch-sigsegv.gdb)
 
 function emu_gdb() {
-    gdb -q -x "$catcher" <<end_go --args "$@"
+    gdb -q -x "$catcher" <<EOF --args "$@"
     run
-end_go
+EOF
 }
 
 if [[ -n $upx_exe_runner ]]; then
