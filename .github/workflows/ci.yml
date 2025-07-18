@@ -88,6 +88,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - { os: ubuntu-22.04 }
           - { os: ubuntu-24.04 }
     name: ${{ format('{0}', matrix.os) }}-0
     runs-on: ${{ matrix.os }}
@@ -110,7 +111,7 @@ jobs:
       - name: ${{ format('Upload artifact {0}', env.artifact_name) }}
         uses: actions/upload-artifact@v4
         with: { name: '${{ env.artifact_name }}', path: tmp/artifact }
-      - name: Mimic ctest tests
+      - name: Mimic ctest tests SIGSEGV
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
           echo "===== parallel jobs: $jobs"
@@ -201,7 +202,7 @@ jobs:
           command -v wine >/dev/null && jobs="$jobs cross-windows-mingw64/debug cross-windows-mingw64/release"
           echo "===== parallel jobs: $jobs"
           CTEST_JOBS=2 parallel -kv --lb 'make build/extra/{}+test' ::: $jobs
-      - name: Mimic ctest tests
+      - name: Mimic ctest tests SIGSEGV
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
           test "${{ matrix.use_extra }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
