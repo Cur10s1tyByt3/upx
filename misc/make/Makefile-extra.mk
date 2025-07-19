@@ -177,7 +177,7 @@ build/extra/gcc-std-cxx23/%: export CXX = g++ -std=gnu++2b
 build/extra/gcc-std-cxx23/%: export UPX_CONFIG_DISABLE_C_STANDARD = ON
 build/extra/gcc-std-cxx23/%: export UPX_CONFIG_DISABLE_CXX_STANDARD = ON
 
-# force building with gcc/g++ C++26 (EXPERIMENTAL; need gcc-14)
+# force building with gcc/g++ C++26 (and C23)
 build/extra/gcc-std-cxx26/debug:   PHONY; $(call run_config_and_build,$@,Debug)
 build/extra/gcc-std-cxx26/release: PHONY; $(call run_config_and_build,$@,Release)
 build/extra/gcc-std-cxx26/%: export CC  = gcc -std=gnu23

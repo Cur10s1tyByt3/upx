@@ -118,6 +118,11 @@ jobs:
           jobs="gcc/debug gcc/release clang/debug clang/release"
           echo "===== parallel jobs: $jobs"
           parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest_sigsegv.sh' ::: $jobs
+      - name: Run ctest tests
+        run: |
+          jobs="gcc/debug gcc/release clang/debug clang/release"
+          echo "===== parallel jobs: $jobs"
+          CTEST_JOBS=2 parallel -kv --lb 'make build/extra/{}+test' ::: $jobs
 
   job-linux-cmake: # uses cmake + make
     if: true
