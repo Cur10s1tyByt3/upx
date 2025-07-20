@@ -107,6 +107,7 @@ jobs:
       - run: ls -l build/*/*/*/upx* || true
       - run: file  build/*/*/*/upx* || true
       - name: Make artifact
+        shell: bash
         run: |
           N=$(echo "upx-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}-${{ matrix.os }}-0" | sed 's/[^0-9a-zA-Z_.-]/-/g')
           mkdir -p "tmp/artifact/$N"
@@ -118,11 +119,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: '${{ env.artifact_name }}', path: tmp/artifact }
       - name: Mimic ctest tests SIGSEGV
+        shell: bash
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
           #jobs="$jobs gcc-pie/debug gcc-pie/release clang-pie/debug clang-pie/release"
-          echo "===== parallel jobs: $jobs"
-          parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest_sigsegv.sh' ::: $jobs
+          for ((i = 0; i < 5; i++)); do
+            echo "===== parallel jobs: $jobs"
+            parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest_sigsegv.sh' ::: $jobs
+          done
       - name: Run ctest tests
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
@@ -325,6 +329,7 @@ jobs:
       - run: ls -l build/*/*/*/upx* || true
       - run: file  build/*/*/*/upx* || true
       - name: Make artifact
+        shell: bash
         run: |
           X="${{ matrix.xcode_version }}"; test -n "$X" && X="-xcode-$X"
           N=$(echo "upx-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}-${{ matrix.os }}$X" | sed 's/[^0-9a-zA-Z_.-]/-/g')
