@@ -19,7 +19,7 @@ env:
   UPX_CONFIG_HAVE_WORKING_BUILD_RPATH: 'ON'
   UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO: 1
   UPX_DEBUG_TEST_LIBC_QSORT: 1
-  ZSTD_CLEVEL: 9
+  ZSTD_CLEVEL: 17
   # 2025-05-21
   ZIG_DIST_VERSION: 0.14.1
 
@@ -102,6 +102,10 @@ jobs:
         with: { submodules: true }
       - run: make build/extra/gcc/all
       - run: make build/extra/clang/all
+      # run: make build/extra/gcc-pie/all
+      # run: make build/extra/clang-pie/all
+      - run: ls -l build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true
       - name: Make artifact
         run: |
           N=$(echo "upx-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}-${{ matrix.os }}-0" | sed 's/[^0-9a-zA-Z_.-]/-/g')
@@ -116,11 +120,13 @@ jobs:
       - name: Mimic ctest tests SIGSEGV
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
+          #jobs="$jobs gcc-pie/debug gcc-pie/release clang-pie/debug clang-pie/release"
           echo "===== parallel jobs: $jobs"
           parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest_sigsegv.sh' ::: $jobs
       - name: Run ctest tests
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
+          #jobs="$jobs gcc-pie/debug gcc-pie/release clang-pie/debug clang-pie/release"
           echo "===== parallel jobs: $jobs"
           CTEST_JOBS=2 parallel -kv --lb 'make build/extra/{}+test' ::: $jobs
 
@@ -176,6 +182,8 @@ jobs:
         if: ${{ matrix.use_extra }}
       - run: make build/extra/cross-windows-mingw64/all
         if: ${{ matrix.use_extra }}
+      - run: ls -l build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true
       - name: Make artifact
         run: |
           N=$(echo "upx-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}-${{ matrix.os }}" | sed 's/[^0-9a-zA-Z_.-]/-/g')
@@ -201,6 +209,12 @@ jobs:
         run: |
           (cd build/extra/gcc/release && DESTDIR="$PWD/Install with cmake" cmake --install .)
           (cd build/extra/gcc/release && DESTDIR="$PWD/Install with make"  make install)
+      - name: Mimic ctest tests SIGSEGV
+        run: |
+          jobs="gcc/debug gcc/release clang/debug clang/release"
+          test "${{ matrix.use_extra }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest_sigsegv.sh' ::: $jobs
       - name: Run ctest tests
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
@@ -209,12 +223,6 @@ jobs:
           command -v wine >/dev/null && jobs="$jobs cross-windows-mingw64/debug cross-windows-mingw64/release"
           echo "===== parallel jobs: $jobs"
           CTEST_JOBS=2 parallel -kv --lb 'make build/extra/{}+test' ::: $jobs
-      - name: Mimic ctest tests SIGSEGV
-        run: |
-          jobs="gcc/debug gcc/release clang/debug clang/release"
-          test "${{ matrix.use_extra }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
-          echo "===== parallel jobs: $jobs"
-          parallel -kv --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest_sigsegv.sh' ::: $jobs
       - name: Mimic ctest tests with Valgrind
         if: true # note: valgrind is SLOW
         run: |
@@ -314,6 +322,8 @@ jobs:
         run: |
           make UPX_XTARGET=xtarget/cross-darwin-arm64 xtarget/all \
             CC="clang -target arm64-apple-darwin" CXX="clang++ -target arm64-apple-darwin"
+      - run: ls -l build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true
       - name: Make artifact
         run: |
           X="${{ matrix.xcode_version }}"; test -n "$X" && X="-xcode-$X"
@@ -688,12 +698,12 @@ jobs:
         run: |
           make UPX_XTARGET=zig/${ZIG_TARGET}${ZIG_PIC} xtarget/release \
             CC="zig-cc" CXX="zig-cxx" CMAKE_AR="$HOME/.local/bin/zig-ar" CMAKE_RANLIB="$HOME/.local/bin/zig-ranlib"
-          file build/zig/${ZIG_TARGET}${ZIG_PIC}/release/upx*
       - name: ${{ format('Build Debug with zig-cc -target {0} {1}', env.ZIG_TARGET, env.ZIG_PIC) }}
         run: |
           make UPX_XTARGET=zig/${ZIG_TARGET}${ZIG_PIC} xtarget/debug \
             CC="zig-cc" CXX="zig-cxx" CMAKE_AR="$HOME/.local/bin/zig-ar" CMAKE_RANLIB="$HOME/.local/bin/zig-ranlib"
-          file build/zig/${ZIG_TARGET}${ZIG_PIC}/debug/upx*
+      - run: ls -l build/*/*/*/upx* || true
+      - run: file  build/*/*/*/upx* || true
       - name: ${{ format('Make artifact from upx-{0}-{1}', github.ref_name, env.UPX_GITREV_SHORT) }}
         shell: bash
         run: |
