@@ -16,7 +16,7 @@ RUN dpkg --add-architecture i386 \
         # the full UPX binary inside the container via CMake:
         7zip bat bfs btop bubblewrap busybox bzip2 bzip3 cabextract ccache chrpath cmake cpio \
         dash diffstat direnv elfutils execstack eza fd-find file fish fzf \
-        g++ gawk gdb gh gojq ht htop hyperfine jq ksh \
+        g++ gawk gdb gh gojq ht htop hyperfine jq just ksh \
         lftp libzstd-dev lsb-release lsd lz4 lzip lzop minify mksh moreutils musl neovim ninja-build \
         p7zip parallel patch patchelf patchutils pax-utils proot \
         python3 python3-pyasn1 python3-pycryptodome python3-pycurl python3-tomli python3-tomli-w \

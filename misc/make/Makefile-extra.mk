@@ -264,7 +264,7 @@ build/analyze/clang-analyzer/%: export CCC_CXX ?= clang++
 # run clang-tidy: uses file compile_commands.json from an existing clang build;
 #   does not create any actual files, so purely PHONY
 CLANG_TIDY_BUILD_BASE = build/extra/clang
-RUN_CLANG_TIDY = time python3 ./misc/analyze/clang-tidy/run-clang-tidy.py -p $<
+RUN_CLANG_TIDY = time python3 ./misc/analyze/clang-tidy/run-clang-tidy.py -p "$<"
 RUN_CLANG_TIDY_WERROR = $(RUN_CLANG_TIDY) '-warnings-as-errors=*'
 build/analyze/clang-tidy-upx/debug build/analyze/clang-tidy-upx/release: $$(CLANG_TIDY_BUILD_BASE)/$$(notdir $$@) PHONY
 	$(RUN_CLANG_TIDY_WERROR) -config-file ./.clang-tidy '/src/.*\.cpp'
