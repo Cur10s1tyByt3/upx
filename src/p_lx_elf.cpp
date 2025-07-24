@@ -8663,6 +8663,7 @@ Elf32_Sym const *PackLinuxElf32::elf_lookup(char const *name) const
                 break;  // end sentinel
         }
         if (n_bucket) {
+            void const *EOM = file_size + (char const *)file_image.getVoidPtr();
             unsigned const m = elf_hash(name) % n_bucket;
             unsigned n_visit = 0;
             unsigned si;
@@ -8676,6 +8677,9 @@ Elf32_Sym const *PackLinuxElf32::elf_lookup(char const *name) const
                     return &dynsym[si];
                 if (l_sym <= &dynsym[n_visit++])
                     throwCantPack("circular DT_HASH chain %d\n", si);
+                // Detect next si out-of-bounds
+                if (((unsigned int const *)EOM - chains) <= si)
+                    throwCantPack("bad DT_HASH chain %d\n", si);
             }
         }
     }
@@ -8764,6 +8768,7 @@ Elf64_Sym const *PackLinuxElf64::elf_lookup(char const *name) const
                 break;  //end
         }
         if (n_bucket) { // -rust-musl can have "empty" hashtab
+            void const *const EOM = file_size + (char const *)file_image.getVoidPtr();
             unsigned const m = elf_hash(name) % n_bucket;
             unsigned n_visit = 0;
             unsigned si;
@@ -8777,6 +8782,9 @@ Elf64_Sym const *PackLinuxElf64::elf_lookup(char const *name) const
                     return &dynsym[si];
                 if (l_sym <= &dynsym[n_visit++])
                     throwCantPack("circular DT_HASH chain %d\n", si);
+                // Detect next si out-of-bounds
+                if (((unsigned int const *)EOM - chains) <= si)
+                    throwCantPack("bad DT_HASH chain %d\n", si);
             }
         }
     }
