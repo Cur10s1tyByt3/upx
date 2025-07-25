@@ -99,6 +99,7 @@ jobs:
       - run: uname -a; pwd; id; umask
       - run: sudo apt-get update
       - run: sudo apt-get install -y dmidecode gdb parallel valgrind
+      - run: sudo dmidecode | sed -n -e '/System Information/,/^$/p'
       - run: sudo dmidecode -q
       - run: sudo dmidecode
       - uses: actions/checkout@v4
@@ -163,6 +164,8 @@ jobs:
             ls -l /usr/bin/${f}*
           done
           ls -l /etc/alternatives/*mingw* || true
+      - run: sudo dmidecode | sed -n -e '/System Information/,/^$/p'
+        if: ${{ matrix.use_extra }}
       - run: sudo dmidecode -q
         if: ${{ matrix.use_extra }}
       - run: sudo dmidecode
@@ -613,7 +616,7 @@ jobs:
       - name: Install Alpine Linux container packages
         shell: sh
         run: |
-          apk update && apk upgrade && apk add bash cmake curl file gdb git make parallel patch strace tar util-linux xz zstd
+          apk update && apk upgrade && apk add bash cmake curl dmidecode file gdb git make parallel patch strace sudo tar util-linux xz zstd
           # set PATH like in Ubuntu
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
           git config --global --add safe.directory '*' # needed when running in a container

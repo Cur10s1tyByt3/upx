@@ -9,13 +9,13 @@ RUN dpkg --add-architecture i386 \
     && apt-get update && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         aria2 bash bash-completion ca-certificates coreutils curl diffutils findutils git grep gzip \
-        less libmpc3 make ncurses-term perl-base sed tar time util-linux wget xz-utils \
+        less libmpc3 make ncurses-term perl-base sed sudo tar time util-linux wget xz-utils \
         libc6:i386 zlib1g:i386 \
         # the following packages are not required for rebuilding the stubs, but
         # they do make the image *much* more convenient and also allow building
         # the full UPX binary inside the container via CMake:
         7zip bat bfs btop bubblewrap busybox bzip2 bzip3 cabextract ccache chrpath cmake cpio \
-        dash diffstat direnv elfutils execstack eza fd-find file fish fzf \
+        dash diffstat direnv dmidecode elfutils execstack eza fd-find file fish fzf \
         g++ gawk gdb gh gojq ht htop hyperfine jq just ksh \
         lftp libzstd-dev lsb-release lsd lz4 lzip lzop minify mksh moreutils musl neovim ninja-build \
         p7zip parallel patch patchelf patchutils pax-utils proot \
