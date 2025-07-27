@@ -102,13 +102,13 @@ SA_RESTORER= 0x04000000
 __NR_rt_sigaction= 13  // /usr/include/asm/unistd_64.h
         push %rdi  // save reg
         sub %edx,%edx  // arg3= 0 ==> do not save old sigaction
-        push %rdx  // 64 bits of signals
-        lea __restore_rt(%rip),%rax; push %rax  // .sa_restorer DEBUG ONLY
-        push $SA_RESTORER | SA_SIGINFO  // .sa_flags
+        push %rdx  // 64 bits of flags for signals
+        push %rdx  // .sa_restorer= NULL
+        push $SA_SIGINFO  // .sa_flags (omit SA_RESTORER to save space)
         lea sigsegv_sigaction(%rip),%rax; push %rax  // .sa_sigaction
         push %rsp; pop %rsi  // arg2= &new struct sigaction
         push $SIGSEGV; pop %rdi  // arg1= signum
-        push $8; pop %r10  // sys4= 8 bytes of bits for signals
+        push $8; pop %sys4  // sys4= 8 bytes of bits for signals
         push $__NR_rt_sigaction; pop %rax; syscall
         add $(3 + 1) * NBPW,%rsp  // toss struct sigaction
         pop %rdi  // restore reg

@@ -177,6 +177,15 @@ no_env_pse:
         mov       %ebp,%ebx  # fd
         movq %rax,3*NBPW(%rsp)  # entry
 
+// Uninstall SIGSEGV handler
+SIGSEGV= 11
+__NR_rt_sigaction= 13  // /usr/include/asm/unistd_64.h
+        push $8; pop %sys4  // sys_arg4 minimal byte count
+        xor %edx,%edx  // no old
+        xor %esi,%esi  // no new
+        push $SIGSEGV; pop %rdi
+        push $__NR_rt_sigaction; pop %eax; syscall
+
 sz_Ehdr= 8*NBPW
 e_type= 16
 ET_EXEC= 2
