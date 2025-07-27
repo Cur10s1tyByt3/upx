@@ -95,6 +95,24 @@ _start: .globl _start
         push %rcx  // argc
         push %rdx  // param for atexit()
 
+// install SIGSEGV handler for debugging
+SIGSEGV= 11
+SA_SIGINFO= 4  // /usr/include/bits/sigaction.h
+SA_RESTORER= 0x04000000
+__NR_rt_sigaction= 13  // /usr/include/asm/unistd_64.h
+        push %rdi  // save reg
+        sub %edx,%edx  // arg3= 0 ==> do not save old sigaction
+        push %rdx  // 64 bits of signals
+        lea __restore_rt(%rip),%rax; push %rax  // .sa_restorer DEBUG ONLY
+        push $SA_RESTORER | SA_SIGINFO  // .sa_flags
+        lea sigsegv_sigaction(%rip),%rax; push %rax  // .sa_sigaction
+        push %rsp; pop %rsi  // arg2= &new struct sigaction
+        push $SIGSEGV; pop %rdi  // arg1= signum
+        push $8; pop %r10  // sys4= 8 bytes of bits for signals
+        push $__NR_rt_sigaction; pop %rax; syscall
+        add $(3 + 1) * NBPW,%rsp  // toss struct sigaction
+        pop %rdi  // restore reg
+
 #define old_sp %rbp
 F_FRAME= 7*NBPW
 F_ENTR= 6*NBPW; F_PMASK= F_ENTR
@@ -294,6 +312,16 @@ eof_n2b:
         pop %rax  // MATCH_12  ADRU
         add $D_FOLD,%rax  // beyond .data
         jmp *%rax  // goto unfolded stub
+
+        .balign 16
+sigsegv_sigaction:
+        endbr64
+        movb $0x76,%al; int3
+
+        .balign 16
+__restore_rt:
+        mov $0xf,%eax
+        syscall
 
 sys_check:
         push %rax  // save __NR_ for debug
