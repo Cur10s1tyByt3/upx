@@ -102,13 +102,13 @@ SA_RESTORER= 0x04000000
 __NR_rt_sigaction= 13  // /usr/include/asm/unistd_64.h
         push %rdi  // save reg
         sub %edx,%edx  // arg3= 0 ==> do not save old sigaction
-        push %rdx  // 64 bits of flags for signals
-        push %rdx  // .sa_restorer= NULL
-        push $SA_SIGINFO  // .sa_flags (omit SA_RESTORER to save space)
+        push %rdx  // .sa_mask: 64 bits (8 bytes) of flags for signals
+        lea __restore_rt(%rip),%rax; push %rax  // .sa_restorer
+        push $SA_RESTORER | SA_SIGINFO  // .sa_flags
         lea sigsegv_sigaction(%rip),%rax; push %rax  // .sa_sigaction
         push %rsp; pop %rsi  // arg2= &new struct sigaction
         push $SIGSEGV; pop %rdi  // arg1= signum
-        push $8; pop %sys4  // sys4= 8 bytes of bits for signals
+        push $8; pop %r10  // sys4= sizeof(__sigset_t) ==> 64 bits
         push $__NR_rt_sigaction; pop %rax; syscall
         add $(3 + 1) * NBPW,%rsp  // toss struct sigaction
         pop %rdi  // restore reg
@@ -313,15 +313,100 @@ eof_n2b:
         add $D_FOLD,%rax  // beyond .data
         jmp *%rax  // goto unfolded stub
 
+__NR_rt_sigreturn= 15
+        .balign 16
+__restore_rt:
+        endbr64
+        mov $__NR_rt_sigreturn,%eax
+        syscall
+
         .balign 16
 sigsegv_sigaction:
         endbr64
-        movb $0x76,%al; int3
+__NR_fork= 57
+        push $__NR_fork; pop %rax; call sys_check
+        test %eax,%eax; je child
+parent:
+        jmp parent  // spin; paused by gdb
 
-        .balign 16
-__restore_rt:
-        mov $0xf,%eax
-        syscall
+proc_self_cmdline:
+        .asciz "/proc/self/cmdline"
+minus_q:
+        .asciz "-q"
+path_gdb:
+        .asciz "/usr/bin/gdb"
+commands_gdb:
+        .ascii "info inferiors\n"
+        .ascii "bt\n"
+        .ascii "up\n"
+        .ascii "x/i $pc\n"
+        .ascii "x/24i $pc-0x20\n",
+        .ascii "info reg\n"
+        .ascii "kill\n"
+        .ascii "quit 1"
+        .byte 0
+commands_gdb_end:
+
+unsimal:  // (dst, value)
+        push $10; pop %rcx  // radix
+        mov %esi,%eax  // value
+        call 0f
+        movb $0,(%rdi)  // terminator
+        ret
+0:
+        xor %edx,%edx; div %ecx; push %rdx  // eax= quo(%edx:%eax / %ecx); edx= rem
+        // 'div' undefines all flags!
+        test %eax,%eax; je 1f; call 0b
+1:
+        pop %rax; add $'0',%eax
+        stosb
+        ret
+
+child:
+PATH_MAX= 4096
+        sub $PATH_MAX,%rsp
+        lea proc_self_cmdline(%rip),%arg1
+O_RDONLY= 0
+        push $O_RDONLY; pop %arg2
+        push $__NR_open; pop %rax; call sys_check
+        push %rax; pop %arg1  // fd
+        push %rsp; pop %arg2  // buffer
+        push $PATH_MAX; pop %arg3
+__NR_read= 0
+        push $__NR_read; pop %rax; call sys_check
+        push $__NR_close; pop %eax; call sys_check
+
+__NR_getppid= 110
+        push $__NR_getppid; pop %eax; syscall
+        push %rax; pop %rsi
+        xor %eax,%eax; push %rax; push %rax  // decimal(pid) fits in 16 bytes
+        push %rsp; pop %rdi; call unsimal
+// argv
+        push %rsp; pop %rsi  // fence post: &pid.unsimal
+        push $0  // argv[4]
+        push %rsi  // arg3 pid
+        add $16,%rsi; push %rsi  // arg2 exename
+        lea minus_q(%rip),%rax; push %rax  // arg1 "-q"
+        add $(path_gdb - minus_q),%rax; push %rax  // arg[0] "/usr/bin/gdb"
+
+        xor %edi,%edi; push $__NR_close; pop %rax; syscall
+        push %rax; push %rsp; pop %rdi  // &fd_pipe[2]; 4 bytes each
+__NR_pipe= 22
+        push $__NR_pipe; pop %rax; call sys_check
+        pop %rdi; shr $32,%rdi  // arg1  write side of pipe
+
+        push $commands_gdb_end - commands_gdb; pop %arg3
+        lea commands_gdb(%rip),%arg2
+__NR_write= 1
+        push $__NR_write; pop %rax; call sys_check
+        push $__NR_close; pop %rax; syscall
+
+        push $0; pop %arg3  // _environ  BUG
+        push %rsp; pop %arg2  // argv
+        movq (%arg2),%arg1  // "/usr/bin/gdb"
+__NR_execve= 59
+        push $__NR_execve; pop %rax; call sys_check
+        hlt
 
 sys_check:
         push %rax  // save __NR_ for debug
