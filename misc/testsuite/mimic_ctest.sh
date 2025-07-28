@@ -44,7 +44,7 @@ if [[ -n $upx_exe_runner ]]; then
 elif [[ -n $CMAKE_CROSSCOMPILING_EMULATOR ]]; then
     IFS=';' read -r -a emu <<< "$CMAKE_CROSSCOMPILING_EMULATOR" # split at semicolons into array
 fi
-run_upx=( "${emu[@]}" "$upx_exe" )
+run_upx=( "$upx_exe" )
 echo "run_upx='${run_upx[*]}'"
 
 ## jreiser test 2025-07-14
@@ -66,7 +66,7 @@ function emu_gdb () {
 end_go
     echo
 }
-emu=(emu_gdb)
+emu=()
 
 function gdb_upx () {
     echo; echo gdb_upx "$@"
