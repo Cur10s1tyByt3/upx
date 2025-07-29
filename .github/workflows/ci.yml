@@ -119,7 +119,7 @@ jobs:
       - name: ${{ format('Upload artifact {0}', env.artifact_name) }}
         uses: actions/upload-artifact@v4
         with: { name: '${{ env.artifact_name }}', path: tmp/artifact }
-      - name: Mimic ctest tests SIGSEGV
+      - name: Mimic ctest tests
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
           echo "===== parallel jobs: $jobs"
@@ -223,7 +223,7 @@ jobs:
         run: |
           (cd build/extra/gcc/release && DESTDIR="$PWD/Install with cmake" cmake --install .)
           (cd build/extra/gcc/release && DESTDIR="$PWD/Install with make"  make install)
-      - name: Mimic ctest tests SIGSEGV
+      - name: Mimic ctest tests
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
           test "${{ matrix.use_extra }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
