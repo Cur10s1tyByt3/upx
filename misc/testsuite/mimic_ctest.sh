@@ -79,7 +79,7 @@ function gdb_upx () {
 end_go
     echo
 }
-run_upx=( $upx_exe )
+run_upx=( "$upx_exe_runner" "$upx_exe" )
 
 ## end jreiser test 2025-07-14
 
