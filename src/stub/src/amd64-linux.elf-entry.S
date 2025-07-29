@@ -347,21 +347,6 @@ commands_gdb:
         .byte 0
 commands_gdb_end:
 
-unsimal:  // (dst, value)
-        push $10; pop %rcx  // radix
-        mov %esi,%eax  // value
-        call 0f
-        movb $0,(%rdi)  // terminator
-        ret
-0:
-        xor %edx,%edx; div %ecx; push %rdx  // eax= quo(%edx:%eax / %ecx); edx= rem
-        // 'div' undefines all flags!
-        test %eax,%eax; je 1f; call 0b
-1:
-        pop %rax; add $'0',%eax
-        stosb
-        ret
-
 child:
 PATH_MAX= 4096
         sub $PATH_MAX,%rsp
@@ -407,6 +392,21 @@ __NR_write= 1
 __NR_execve= 59
         push $__NR_execve; pop %rax; call sys_check
         hlt
+
+unsimal:  // (dst, value)
+        push $10; pop %rcx  // radix
+        mov %esi,%eax  // value
+        call 0f
+        movb $0,(%rdi)  // terminator
+        ret
+0:
+        xor %edx,%edx; div %ecx; push %rdx  // eax= quo(%edx:%eax / %ecx); edx= rem
+        // 'div' undefines all flags!
+        test %eax,%eax; je 1f; call 0b
+1:
+        pop %rax; add $'0',%eax
+        stosb
+        ret
 
 sys_check:
         push %rax  // save __NR_ for debug
