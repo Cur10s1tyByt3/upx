@@ -34,7 +34,10 @@ upx_exe=$(readlink -fn "$upx_exe") # make absolute
 [[ -f $upx_exe ]] || exit 1
 
 # set emu and run_upx
-emu=( "${emu[@]}" )
+set | grep emu  # debug
+set | grep upx  # debug
+
+emu=( "$qemu" )
 if [[ -n $upx_exe_runner ]]; then
     # usage examples:
     #   export upx_exe_runner="qemu-x86_64 -cpu Nehalem"
