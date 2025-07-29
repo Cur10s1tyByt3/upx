@@ -34,7 +34,7 @@ upx_exe=$(readlink -fn "$upx_exe") # make absolute
 [[ -f $upx_exe ]] || exit 1
 
 # set emu and run_upx
-emu=()
+emu=( "${emu[@]}" )
 if [[ -n $upx_exe_runner ]]; then
     # usage examples:
     #   export upx_exe_runner="qemu-x86_64 -cpu Nehalem"
@@ -44,7 +44,7 @@ if [[ -n $upx_exe_runner ]]; then
 elif [[ -n $CMAKE_CROSSCOMPILING_EMULATOR ]]; then
     IFS=';' read -r -a emu <<< "$CMAKE_CROSSCOMPILING_EMULATOR" # split at semicolons into array
 fi
-run_upx=( "$upx_exe" )
+run_upx=( "${emu[@]}" "$upx_exe")
 echo "run_upx='${run_upx[*]}'"
 
 ## jreiser test 2025-07-14
