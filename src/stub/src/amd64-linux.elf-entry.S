@@ -113,6 +113,17 @@ __NR_rt_sigaction= 13  // /usr/include/asm/unistd_64.h
         add $(3 + 1) * NBPW,%rsp  // toss struct sigaction
         pop %rdi  // restore reg
 
+#if 0  //{ TEST ONLY
+    movl $0xaaaaaaaa,%eax
+    movl $0xbbbbbbbb,%ebx
+    movl $0xcccccccc,%ecx
+    movl $0xdddddddd,%edx
+    movl $0x55555555,%ebp
+    movl $0x66666666,%esi
+    movl $0x77777777,%edi
+    movl (%rdx),%edx  // force SIGSEGV
+#endif  //}
+
 #define old_sp %rbp
 F_FRAME= 7*NBPW
 F_ENTR= 6*NBPW; F_PMASK= F_ENTR
@@ -337,11 +348,19 @@ path_gdb:
         .asciz "/usr/bin/gdb"
 commands_gdb:
         .ascii "info inferiors\n"
-        .ascii "bt\n"
-        .ascii "up\n"
+        .ascii "set $pc = *(long *)($rdx + 168)\n"
         .ascii "x/i $pc\n"
-        .ascii "x/24i $pc-0x20\n",
-        .ascii "info reg\n"
+        .ascii "x/24i $pc - 0x20\n",
+        .ascii "print \"rdi, rsi\"\n"
+        .ascii "x/2xg $rdx + 0x68\n"
+        .ascii "print \"rbp, rbx\"\n"
+        .ascii "x/2xg\n"
+        .ascii "print \"rdx, rax\"\n"
+        .ascii "x/2xg\n"
+        .ascii "print \"rcx, rsp\"\n"
+        .ascii "x/2xg\n"
+        .ascii "print \"rip, ps\"\n"
+        .ascii "x/2xg\n"
         .ascii "kill\n"
         .ascii "quit 1"
         .byte 0
@@ -374,6 +393,7 @@ __NR_getppid= 110
         lea minus_q(%rip),%rax; push %rax  // arg1 "-q"
         add $(path_gdb - minus_q),%rax; push %rax  // arg[0] "/usr/bin/gdb"
 
+#if 1  //{ pipe input to gdb
         xor %edi,%edi; push $__NR_close; pop %rax; syscall
         push %rax; push %rsp; pop %rdi  // &fd_pipe[2]; 4 bytes each
 __NR_pipe= 22
@@ -385,6 +405,7 @@ __NR_pipe= 22
 __NR_write= 1
         push $__NR_write; pop %rax; call sys_check
         push $__NR_close; pop %rax; syscall
+#endif  //}
 
         push $0; pop %arg3  // _environ  BUG
         push %rsp; pop %arg2  // argv
