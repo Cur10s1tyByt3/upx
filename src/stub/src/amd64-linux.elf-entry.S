@@ -114,6 +114,14 @@ __NR_rt_sigaction= 13  // /usr/include/asm/unistd_64.h
         pop %rdi  // restore reg
 
 #if 0  //{ TEST ONLY
+    movl $0x18181818,%r8d
+    movl $0x19191919,%r9d
+    movl $0x1a1a1a1a,%r10d
+    movl $0x1b1b1b1b,%r11d
+    movl $0x1c1c1c1c,%r12d
+    movl $0x1d1d1d1d,%r13d
+    movl $0x1e1e1e1e,%r14d
+    movl $0x1f1f1f1f,%r15d
     movl $0xaaaaaaaa,%eax
     movl $0xbbbbbbbb,%ebx
     movl $0xcccccccc,%ecx
@@ -334,6 +342,38 @@ __restore_rt:
         .balign 16
 sigsegv_sigaction:
         endbr64
+        push %rdx  // save &ucontext_t
+
+// print /proc/self/maps of child (same as parent: the beauty of fork())
+        mov $end_announce_sigaction - announce_sigaction,%edx  // arg3 len
+        lea announce_sigaction(%rip),%rsi  // arg2 buf
+        push $2; pop %rdi  // arg1 fd_stderr
+        push $__NR_write; pop %eax; syscall  // ignore error on write()
+
+        xor %esi,%esi  // arg2 O_RDONLY
+        lea proc_self_maps(%rip),%arg1
+        push $__NR_open; pop %rax; syscall
+        mov %rax,%r12  // fd_maps
+BUFLEN= 4096
+        mov $BUFLEN,%ebx; sub %rbx,%rsp  // allocate buffer
+loop_maps:
+        mov %ebx,%edx  // arg3 buflen
+        push %rsp; pop %rsi  // arg2 buffer
+        mov %r12,%rdi  // arg1 fd_maps
+        xor %eax,%eax; syscall  // __NR_read
+        test %eax,%eax; jle done_maps  // ignore error on read()
+        mov %eax,%edx  // arg3 buflen
+        push %rsp; pop %rsi  // arg2 buf
+        push $2; pop %rdi  // arg1 fd_stderr
+        push $__NR_write; pop %rax; syscall  // ignore error on write()
+        jmp loop_maps
+done_maps:
+        mov %r12,%rdi  //arg1 fd_maps
+        add %rbx,%rsp  // discard buffer
+        push $__NR_close; pop %rax; syscall
+// end printing of /proc/self/maps
+
+        pop %rdx  // restore &ucontext_t
 __NR_fork= 57
         push $__NR_fork; pop %rax; call sys_check
         test %eax,%eax; je child
@@ -342,25 +382,45 @@ parent:
 
 proc_self_cmdline:
         .asciz "/proc/self/cmdline"
+announce_sigaction:
+        .asciz "\n\nSIGSEGV address space:\n"
+end_announce_sigaction:
+
+proc_self_maps:
+        .asciz "/proc/self/maps"
 minus_q:
         .asciz "-q"
 path_gdb:
         .asciz "/usr/bin/gdb"
 commands_gdb:
         .ascii "info inferiors\n"
-        .ascii "set $pc = *(long *)($rdx + 168)\n"
-        .ascii "x/i $pc\n"
-        .ascii "x/24i $pc - 0x20\n",
+
+        .ascii "print \"r8, r9\"\n"
+        .ascii "x/2xg $rdx + 5*8\n"
+        .ascii "print \"r10, r11\"\n"
+        .ascii "x/2xg\n"
+        .ascii "print \"r12, r13\"\n"
+        .ascii "x/2xg\n"
+        .ascii "print \"r14, r15\"\n"
+        .ascii "x/2xg\n"
+
         .ascii "print \"rdi, rsi\"\n"
-        .ascii "x/2xg $rdx + 0x68\n"
+        .ascii "x/2xg\n"
         .ascii "print \"rbp, rbx\"\n"
         .ascii "x/2xg\n"
         .ascii "print \"rdx, rax\"\n"
         .ascii "x/2xg\n"
         .ascii "print \"rcx, rsp\"\n"
         .ascii "x/2xg\n"
-        .ascii "print \"rip, ps\"\n"
+        .ascii "print \"rip, efl\"\n"
         .ascii "x/2xg\n"
+
+        .ascii "set $pc = *(long *)($rdx + 168)\n"
+        .ascii "print \"faulting instr\"\n"
+        .ascii "x/i $pc\n"
+        .ascii "print \"fault context\"\n"
+        .ascii "x/24i $pc - 0x20\n"
+
         .ascii "kill\n"
         .ascii "quit 1"
         .byte 0
